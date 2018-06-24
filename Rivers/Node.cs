@@ -77,31 +77,7 @@ namespace Rivers
         {
             return GetPredecessors().Union(GetSuccessors());
         }
-
-        public IEnumerable<Node> PreOrderTraversal()
-        {       
-            yield return this;
-            
-            foreach (var successor in GetSuccessors())
-            {
-                foreach (var node in successor.PreOrderTraversal())
-                    yield return node;
-            }
-        }
-
-        public IEnumerable<Node> PostOrderTraversal()
-        {
-            var visited = new HashSet<Node>();
-            
-            foreach (var successor in GetSuccessors())
-            {
-                foreach (var node in successor.PostOrderTraversal())
-                    yield return node;
-            }
-
-            yield return this;
-        }
-
+        
         public override string ToString()
         {
             return Name;

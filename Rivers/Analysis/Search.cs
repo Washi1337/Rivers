@@ -9,6 +9,28 @@ namespace Rivers.Analysis
     /// </summary>
     public static class Search
     {
+        public static IEnumerable<Node> PreOrderTraversal(this Node start)
+        {
+            yield return start;
+            
+            foreach (var successor in start.GetSuccessors())
+            {
+                foreach (var node in successor.PreOrderTraversal())
+                    yield return node;
+            }
+        }
+
+        public static IEnumerable<Node> PostOrderTraversal(this Node start)
+        {
+            foreach (var successor in start.GetSuccessors())
+            {
+                foreach (var node in successor.PostOrderTraversal())
+                    yield return node;
+            }
+
+            yield return start;
+        }
+        
         /// <summary>
         /// Performs a search for a node in a graph in a breadth first order.
         /// </summary>
@@ -63,8 +85,8 @@ namespace Rivers.Analysis
         /// </summary>
         /// <param name="start">The node in the graph to start the traversal at.</param>
         /// <returns>A lazy loaded ordered collection containing all nodes it traversed.</returns>
-        public static IEnumerable<Node> DepthFirstTraversal(this Node start)
-        {            
+        public static IEnumerable<Node> DepthFirstTraversal(this Node start, bool revisit = false)
+        {
             var stack = new Stack<Node>();
             var visited = new HashSet<Node>();
 
@@ -73,15 +95,19 @@ namespace Rivers.Analysis
             while (stack.Count > 0)
             {
                 var current = stack.Pop();
-                if (visited.Add(current))
+                if (visited.Add(current) || revisit)
                 {
                     yield return current;
-                    foreach (var edge in current.OutgoingEdges)
-                        stack.Push(edge.Target);
+                    foreach (var successor in current.GetSuccessors())
+                        stack.Push(successor);
                 }
             }
         }
-        
+
+        public static bool IsCyclic(this Graph graph)
+        {
+            return graph.Nodes.Any(x => x.DepthFirstTraversal(true).Skip(1).Contains(x));
+        }
         
     }
 }

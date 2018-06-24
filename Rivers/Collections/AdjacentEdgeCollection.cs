@@ -34,6 +34,19 @@ namespace Rivers.Collections
             get { return false; }
         }
 
+        public void Add(string other)
+        {
+            Add(Origin.ParentGraph.Nodes[other]);
+        }
+
+        public void Add(Node other)
+        {
+            if (Outgoing)
+                Add(new Edge(Origin, other));
+            else
+                Add(new Edge(other, Origin));
+        }
+
         public void Add(Edge item)
         {
             if (Outgoing && item.Source != Origin)
