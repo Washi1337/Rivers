@@ -37,6 +37,16 @@ namespace Rivers
         }
 
         /// <summary>
+        /// Gets the in degree of the node.
+        /// </summary>
+        public int InDegree => IncomingEdges.Count;
+
+        /// <summary>
+        /// Gets the out degree of the node.
+        /// </summary>
+        public int OutDegree => OutgoingEdges.Count;
+
+        /// <summary>
         /// Gets a collection of edges that are towards the node.
         /// </summary>
         public AdjacentEdgeCollection IncomingEdges
@@ -82,5 +92,6 @@ namespace Rivers
         {
             return Name;
         }
+        
     }
 }

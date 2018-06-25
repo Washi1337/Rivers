@@ -10,12 +10,11 @@ Features
     - Optimised for quick insertion of nodes and edges.
     - Minimal memory foodprint.
     - Efficient for sparse graphs.
-- Various built-in node traversal and search algorithms.
-    - Breadth-first.
-    - Depth-first.
+- Various built-in node traversal and search algorithms (including breadth first, depth first and more).
 - Built-in dominator analysis. Useful for control flow graph analysis.
     - Construct dominator trees from CFGs.
     - Get dominance frontier.
+- Dot file export support. 
 
 
 Quick starters guide

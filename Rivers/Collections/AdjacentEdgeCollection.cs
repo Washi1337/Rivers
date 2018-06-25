@@ -4,9 +4,12 @@ using System.Collections.Generic;
 
 namespace Rivers.Collections
 {
+    /// <summary>
+    /// Represents a collection of edges either originating, or targeting a node in a graph.
+    /// </summary>
     public class AdjacentEdgeCollection : ICollection<Edge>
     {
-        private readonly ISet<Edge> _edges = new HashSet<Edge>();
+        private readonly IDictionary<string, Edge> _edges = new Dictionary<string, Edge>();
 
         public AdjacentEdgeCollection(Node origin, bool outgoing)
         {
@@ -14,58 +17,101 @@ namespace Rivers.Collections
             Outgoing = outgoing;
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the collection contains outgoing edges or incoming edges.
+        /// </summary>
         public bool Outgoing
         {
             get;
         }
         
+        /// <summary>
+        /// Gets the node the adjacent edge collection is associated to.
+        /// </summary>
         public Node Origin
         {
             get;
         }
-        
-        public int Count
+
+        /// <inheritdoc />
+        public int Count => _edges.Count;
+
+        /// <inheritdoc />
+        public bool IsReadOnly => false;
+
+        /// <summary>
+        /// Gets an edge based on the name of a neighbour.
+        /// </summary>
+        /// <param name="neighbour">The name of the neighbour.</param>
+        public Edge this[string neighbour] => _edges[neighbour];
+
+        /// <summary>
+        /// Tries to get an edge based on the name of a neighbour.
+        /// </summary>
+        /// <param name="neighbour">The name of the neighbour.</param>
+        /// <param name="edge">The edge either originating, or going to the provided neighbour.</param>
+        /// <returns>True if the edge is present, false otherwise.</returns>
+        public bool TryGetEdge(string neighbour, out Edge edge)
         {
-            get { return _edges.Count; }
+            return _edges.TryGetValue(neighbour, out edge);
         }
         
-        public bool IsReadOnly
+        /// <summary>
+        /// Adds a new edge to the node, either originating or towards a new neighbour, depending on the value of <see cref="Outgoing"/>.
+        /// </summary>
+        /// <param name="neighbour">The name of the new neighbour.</param>
+        public void Add(string neighbour)
         {
-            get { return false; }
+            Add(Origin.ParentGraph.Nodes[neighbour]);
         }
 
-        public void Add(string other)
+        /// <summary>
+        /// Adds a new edge to the node, either originating or towards a new neighbour, depending on the value of <see cref="Outgoing"/>.
+        /// </summary>
+        /// <param name="neighbour">The new neighbour node.</param>
+        public void Add(Node neighbour)
         {
-            Add(Origin.ParentGraph.Nodes[other]);
-        }
-
-        public void Add(Node other)
-        {
+            if (neighbour == null)
+                throw new ArgumentNullException(nameof(neighbour));
+            
             if (Outgoing)
-                Add(new Edge(Origin, other));
+                Add(new Edge(Origin, neighbour));
             else
-                Add(new Edge(other, Origin));
+                Add(new Edge(neighbour, Origin));
         }
 
-        public void Add(Edge item)
+        /// <summary>
+        /// Adds a new edge to the node.
+        /// </summary>
+        /// <param name="edge">The edge to add.</param>
+        /// <exception cref="ArgumentNullException">Occurs when the edge is null.</exception>
+        /// <exception cref="ArgumentException">Occurs when the edge does not conform to the value in <see cref="Outgoing"/>.</exception>
+        public void Add(Edge edge)
         {
-            if (Outgoing && item.Source != Origin)
+            if (edge == null)
+                throw new ArgumentNullException(nameof(edge));
+            
+            if (Outgoing && edge.Source != Origin)
                 throw new ArgumentException("Edge must be originating from the origin.");
-            else if (!Outgoing && item.Target != Origin)
+            else if (!Outgoing && edge.Target != Origin)
                 throw new ArgumentException("Edge must have a target equal to the origin.");
 
-            if (_edges.Add(item))
+            var neighbour = Outgoing ? edge.Target : edge.Source;
+
+            if (!_edges.ContainsKey(neighbour.Name))
             {
+                _edges.Add(neighbour.Name, edge);
                 if (Outgoing)
-                    item.Target.IncomingEdges.Add(item);
+                    neighbour.IncomingEdges.Add(edge);
                 else
-                    item.Source.OutgoingEdges.Add(item);
+                    neighbour.OutgoingEdges.Add(edge);
             }
         }
 
+        /// <inheritdoc />
         public void Clear()
         {
-            foreach (var item in _edges)
+            foreach (var item in _edges.Values)
             {
                 if (Outgoing)
                     item.Target.IncomingEdges.Remove(item);
@@ -76,20 +122,40 @@ namespace Rivers.Collections
             _edges.Clear();
         }
 
+        /// <summary>
+        /// Determines whether there exists an edge from/to the given node, depending on the value of <see cref="Outgoing"/>.   
+        /// </summary>
+        /// <param name="neighbour">The neighbour.</param>
+        /// <returns>True if there exists an edge, false otherwise.</returns>
+        public bool Contains(string neighbour)
+        {
+            return _edges.ContainsKey(neighbour);
+        }
+
+        /// <inheritdoc />
         public bool Contains(Edge item)
         {
-            return _edges.Contains(item);
+            if (item == null)
+                return false;
+            return _edges.ContainsKey((Outgoing ? item.Target : item.Source).Name);
         }
 
+        /// <inheritdoc />
         public void CopyTo(Edge[] array, int arrayIndex)
         {
-            _edges.CopyTo(array, arrayIndex);
+            _edges.Values.CopyTo(array, arrayIndex);
         }
 
+        /// <inheritdoc />
         public bool Remove(Edge item)
         {
-            if (item != null && _edges.Remove(item))
+            if (item == null)
+                return false;
+            
+            var neighbour = Outgoing ? item.Target : item.Source; 
+            if (_edges.ContainsKey(neighbour.Name))
             {
+                _edges.Remove(neighbour.Name);
                 if (Outgoing)
                     item.Target.IncomingEdges.Remove(item);
                 else
@@ -100,9 +166,10 @@ namespace Rivers.Collections
             return false;
         }
 
+        /// <inheritdoc />
         public IEnumerator<Edge> GetEnumerator()
         {
-            return _edges.GetEnumerator();
+            return _edges.Values.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

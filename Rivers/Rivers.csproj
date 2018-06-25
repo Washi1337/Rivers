@@ -44,9 +44,13 @@
     <Compile Include="Collections\EdgeCollection.cs" />
     <Compile Include="Collections\NodeCollection.cs" />
     <Compile Include="Edge.cs" />
+    <Compile Include="EdgeComparer.cs" />
     <Compile Include="Graph.cs" />
+    <Compile Include="GraphComparer.cs" />
     <Compile Include="Node.cs" />
+    <Compile Include="NodeComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Serialization\DotWriter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

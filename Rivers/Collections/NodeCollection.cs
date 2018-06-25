@@ -45,6 +45,11 @@ namespace Rivers.Collections
             get { return false; }
         }
 
+        public bool TryGetNode(string name, out Node node)
+        {
+            return _nodes.TryGetValue(name, out node);
+        }
+
         /// <summary>
         /// Adds a new node with the given name if it is not present yet.
         /// </summary>

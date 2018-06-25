@@ -32,6 +32,19 @@ namespace Rivers.Collections
         /// <inheritdoc />
         public bool IsReadOnly => false;
 
+        public bool TryGetEdge(string source, string target, out Edge edge)
+        {
+            if (ParentGraph.Nodes.TryGetNode(source, out var sourceNode)
+                && ParentGraph.Nodes.TryGetNode(target, out var targetNode))
+            {
+                if (sourceNode.OutgoingEdges.TryGetEdge(target, out edge))
+                    return true;
+            }
+            
+            edge = null;
+            return false;
+        }
+
         public Edge Add(string source, string target)
         {
             return Add(ParentGraph.Nodes[source], ParentGraph.Nodes[target]);
