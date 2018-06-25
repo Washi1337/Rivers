@@ -14,7 +14,7 @@ Features
 - Built-in dominator analysis. Useful for control flow graph analysis.
     - Construct dominator trees from CFGs.
     - Get dominance frontier.
-- Dot file export support. 
+- Dot file import/export support. 
 
 
 Quick starters guide
@@ -78,4 +78,24 @@ foreach (var node in myNode.DepthFirstTraversal())
 var nodes = from n in myNode.DepthFirstTraversal()
             // ...
             select n;
+```
+
+Dot file support
+----------------
+Importing and exporting to dot files can be done using the `DotReader` and `DotWriter` classes. You can then use a tool such as http://webgraphviz.com/ to visualise the graph.
+
+```csharp
+using Rivers.Serialization.Dot;
+
+// Importing
+var reader = new StreamReader("mygraph.dot");
+var dotReader = new DotReader(reader);
+var myGraph = reader.Read();
+
+...
+
+// Exporting
+var writer = new StreamWriter("mygraph2.dot");
+var dotWriter = new DotWriter(writer);
+dotWriter.Write(myGraph);
 ```
