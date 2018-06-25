@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Rivers.Serialization
+namespace Rivers.Serialization.Dot
 {
+    /// <summary>
+    /// Provides a mechanism for writing graphs to a character stream using the dot file format.
+    /// </summary>
     public class DotWriter
     {
-        private static readonly IDictionary<char, string> EscapedCharacters = new Dictionary<char, string>
+        public static readonly IDictionary<char, string> EscapedCharacters = new Dictionary<char, string>
         {
             ['\r'] = "\\\r",
             ['\n'] = "\\\n",
@@ -21,6 +24,10 @@ namespace Rivers.Serialization
             _writer = writer ?? throw new ArgumentNullException(nameof(writer));
         }
 
+        /// <summary>
+        /// Writes a graph to the character stream.
+        /// </summary>
+        /// <param name="graph">The graph to write.</param>
         public void Write(Graph graph)
         {
             WriteHeader();
@@ -36,7 +43,7 @@ namespace Rivers.Serialization
 
         private void WriteHeader()
         {
-            _writer.Write("strict digraph {");
+            _writer.WriteLine("strict digraph {");
         }
 
         private void WriteFooter()
@@ -82,9 +89,9 @@ namespace Rivers.Serialization
                 _writer.Write(entry.Key.ToString());
                 _writer.Write('=');
                 WriteString(entry.Value.ToString());
-                c++;
                 if (c < objects.Count - 1)
                     _writer.Write(", ");
+                c++;
             }   
         }
 

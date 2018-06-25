@@ -50,7 +50,15 @@
     <Compile Include="Node.cs" />
     <Compile Include="NodeComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Serialization\DotWriter.cs" />
+    <Compile Include="Serialization\Dot\DotReader.cs" />
+    <Compile Include="Serialization\Dot\DotTerminal.cs" />
+    <Compile Include="Serialization\Dot\DotToken.cs" />
+    <Compile Include="Serialization\Dot\DotTokenizer.cs" />
+    <Compile Include="Serialization\Dot\DotWriter.cs" />
+    <Compile Include="Serialization\SyntaxError.cs" />
+    <Compile Include="Serialization\SyntaxException.cs" />
+    <Compile Include="Serialization\TextLocation.cs" />
+    <Compile Include="Serialization\TextRange.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

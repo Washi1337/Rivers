@@ -9,6 +9,10 @@ namespace Rivers
         public NodeComparer()
         {
             NameComparer = StringComparer.InvariantCulture;
+            IncludeName = true;
+            IncludeUserData = false;
+            IncludeInDegree = true;
+            IncludeOutDegree = true;
         }
 
         public IEqualityComparer<string> NameComparer
@@ -35,7 +39,7 @@ namespace Rivers
             set;
         }
 
-        public bool IncludeOutgoingEdges
+        public bool IncludeOutDegree
         {
             get;
             set;
@@ -66,7 +70,7 @@ namespace Rivers
             if (IncludeInDegree && x.InDegree != y.InDegree)
                 return false;
 
-            if (IncludeOutgoingEdges && x.OutDegree != y.OutDegree)
+            if (IncludeOutDegree && x.OutDegree != y.OutDegree)
                 return false;
 
             return true;

@@ -28,5 +28,24 @@ namespace Rivers
         {
             get;
         }
+
+        protected bool Equals(Graph other)
+        {
+            var comparer = new GraphComparer();
+            return comparer.Equals(this, other);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Graph) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
