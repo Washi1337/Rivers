@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Rivers.Serialization.Dot
 {
@@ -53,7 +54,7 @@ namespace Rivers.Serialization.Dot
 
         private void Write(Node node)
         {
-            WriteString(node.Name);
+            WriteIdentifier(node.Name);
 
             if (node.UserData.Count > 0)
             {
@@ -67,9 +68,9 @@ namespace Rivers.Serialization.Dot
 
         private void Write(Edge edge)
         {
-            WriteString(edge.Source.Name);
+            WriteIdentifier(edge.Source.Name);
             _writer.Write(" -> ");
-            WriteString(edge.Target.Name);
+            WriteIdentifier(edge.Target.Name);
             
             if (edge.UserData.Count > 0)
             {
@@ -86,21 +87,33 @@ namespace Rivers.Serialization.Dot
             int c = 0;
             foreach (var entry in objects)
             {
-                _writer.Write(entry.Key.ToString());
+                WriteIdentifier(entry.Key.ToString());
                 _writer.Write('=');
-                WriteString(entry.Value.ToString());
+                WriteIdentifier(entry.Value.ToString());
                 if (c < objects.Count - 1)
                     _writer.Write(", ");
                 c++;
             }   
         }
 
-        private void WriteString(string text)
+        private void WriteIdentifier(string text)
         {
-            _writer.Write('"');
-            foreach (var c in text)
-                WriteEscapedCharacter(c);
-            _writer.Write('"');
+            if (!NeedsEscaping(text))
+            {
+                _writer.Write(text);
+            }
+            else
+            {
+                _writer.Write('"');
+                foreach (var c in text)
+                    WriteEscapedCharacter(c);
+                _writer.Write('"');
+            }
+        }
+
+        private static bool NeedsEscaping(string text)
+        {
+            return text.Any(c => EscapedCharacters.ContainsKey(c));
         }
 
         private void WriteEscapedCharacter(char c)

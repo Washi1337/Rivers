@@ -16,7 +16,7 @@ namespace Rivers.Serialization.Dot
             ["graph"] = DotTerminal.Graph,
             ["digraph"] = DotTerminal.DiGraph,
         };
-            
+        
         private readonly TextReader _reader;
         private TextLocation _startLocation; 
         private TextLocation _currentLocation;
@@ -178,6 +178,8 @@ namespace Rivers.Serialization.Dot
                 switch (c)
                 {
                     case '\\':
+                        if (isEscaping)
+                            builder.Append('\\');
                         isEscaping = !isEscaping;
                         break;
                     case 'r':

@@ -86,6 +86,5 @@ namespace Rivers
                 Edges.Add(edge);
             }
         }
-
     }
 }

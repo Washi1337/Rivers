@@ -8,8 +8,9 @@ Features
 ========
 - Easy to use graph class modelled using adjacency lists for each node. This has the following advantages:
     - Optimised for quick insertion of nodes and edges.
-    - Minimal memory foodprint.
+    - Minimal memory footprint.
     - Efficient for sparse graphs.
+- Various graph generators to help building up common graph structures.
 - Various built-in node traversal and search algorithms (including breadth first, depth first and more).
 - Built-in dominator analysis. Useful for control flow graph analysis.
     - Construct dominator trees from CFGs.
@@ -48,8 +49,10 @@ The `Node` class has various properties that give more insight about a node in t
 // Obtain the node.
 var node = graph.Nodes["1"];
 
-// Add an edge from 1 to 2.
-node.OutgoingEdges.Add("2");
+// Add an edge from 1 to 2, 3 and 4.
+node.OutgoingEdges.Add(new Edge(node, graph.Nodes["2"]));
+node.OutgoingEdges.Add(graph.Nodes["3"]);
+node.OutgoingEdges.Add("4");
 
 // Set user data.
 node.UserData["MyProperty"] = 1234;
@@ -60,6 +63,8 @@ Perform graph searches and traversals
 There are various extension methods defined to perform searches in the graph. Example:
 
 ```csharp
+using Rivers.Analysis;
+
 var result = myNode.DepthFirstSearch(n => n.Name.Contains("A"));
 if (result == null) 
 {
@@ -78,6 +83,37 @@ foreach (var node in myNode.DepthFirstTraversal())
 var nodes = from n in myNode.DepthFirstTraversal()
             // ...
             select n;
+```
+
+Generating graphs
+-----------------
+The `Rivers.Generators` namespace contains various graph generators for building common graph structures easily.
+
+```csharp
+using Rivers.Generators;
+
+var generator = new PathGenerator(5);
+var pathGraph = generator.GenerateGraph();
+// pathGraph now contains the graph:
+// 1 -> 2 -> 3 -> 4 -> 5
+```
+
+Dominator analysis
+------------------
+Dominator information can be obtained by creating a new instance of the `DominatorInfo` class.
+
+```csharp
+using Rivers.Analysis;
+
+var cfg = new Graph();
+var rootNode = cfg.Nodes.Add("root");
+var someOtherNode = cfg.Nodes.Add("other");
+// ...
+
+var info = new DominatorInfo(rootNode);
+
+var idom = info.GetImmediateDominator(someOtherNode);
+var frontier = info.GetDominanceFrontier(someOtherNode);
 ```
 
 Dot file support

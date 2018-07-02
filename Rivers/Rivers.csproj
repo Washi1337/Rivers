@@ -45,6 +45,9 @@
     <Compile Include="Collections\NodeCollection.cs" />
     <Compile Include="Edge.cs" />
     <Compile Include="EdgeComparer.cs" />
+    <Compile Include="Generators\CycleGenerator.cs" />
+    <Compile Include="Generators\IGraphGenerator.cs" />
+    <Compile Include="Generators\PathGenerator.cs" />
     <Compile Include="Graph.cs" />
     <Compile Include="GraphComparer.cs" />
     <Compile Include="Node.cs" />
