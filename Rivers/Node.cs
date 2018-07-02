@@ -69,24 +69,6 @@ namespace Rivers
         {
             get;
         }
-
-        public IEnumerable<Node> GetPredecessors()
-        {
-            return IncomingEdges.Select(x => x.Source);
-        }
-
-        public IEnumerable<Node> GetSuccessors()
-        {
-            return OutgoingEdges.Select(x => x.Target);
-        }
-        
-        /// <summary>
-        /// Gets a collection of neighbouring nodes.
-        /// </summary>
-        public IEnumerable<Node> GetNeighbours()
-        {
-            return GetPredecessors().Union(GetSuccessors());
-        }
         
         public override string ToString()
         {
