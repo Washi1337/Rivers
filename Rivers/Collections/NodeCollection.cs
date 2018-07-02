@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rivers.Collections
 {
@@ -89,6 +90,16 @@ namespace Rivers.Collections
             _nodes.Clear();
         }
 
+        /// <summary>
+        /// Determines whether there exists in the collection a node with the povided name.
+        /// </summary>
+        /// <param name="nodeName">The name of the node to search.</param>
+        /// <returns>True if a node exists, false otherwise.</returns>
+        public bool Contains(string nodeName)
+        {
+            return _nodes.ContainsKey(nodeName);
+        }
+
         /// <inheritdoc />
         public bool Contains(Node item)
         {
@@ -103,11 +114,24 @@ namespace Rivers.Collections
             _nodes.Values.CopyTo(array, arrayIndex);
         }
 
+        /// <summary>
+        /// Removes a node with the provided name.
+        /// </summary>
+        /// <param name="nodeName">The name of the node to remove.</param>
+        /// <returns>True if the node was removed, false otherwise.</returns>
+        public bool Remove(string nodeName)
+        {
+           return TryGetNode(nodeName, out var node) && Remove(node);    
+        }
+        
         /// <inheritdoc />
         public bool Remove(Node item)
         {
             if (Contains(item))
             {
+                foreach (var edge in item.GetEdges().ToArray())
+                    ParentGraph.Edges.Remove(edge);
+                
                 _nodes.Remove(item.Name);
                 item.ParentGraph = null;
                 return true;

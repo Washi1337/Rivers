@@ -8,8 +8,7 @@ namespace Rivers.Test
         public void EmptyCollection()
         {
             var g = new Graph();
-            var node = new Node("1");
-            g.Nodes.Add(node);
+            var node = g.Nodes.Add("1");
             
             Assert.Equal(0, node.IncomingEdges.Count);
             Assert.Equal(0, node.OutgoingEdges.Count);
@@ -19,10 +18,8 @@ namespace Rivers.Test
         public void AddIncomingEdge()
         {
             var g = new Graph();
-            var node1 = new Node("1");
-            var node2 = new Node("2");
-            g.Nodes.Add(node1);
-            g.Nodes.Add(node2);
+            var node1 = g.Nodes.Add("1");
+            var node2 = g.Nodes.Add("2");
 
             var edge = new Edge(node1, node2);
             node2.IncomingEdges.Add(edge);
@@ -39,10 +36,8 @@ namespace Rivers.Test
         public void AddOutgoingEdge()
         {
             var g = new Graph();
-            var node1 = new Node("1");
-            var node2 = new Node("2");
-            g.Nodes.Add(node1);
-            g.Nodes.Add(node2);
+            var node1 = g.Nodes.Add("1");
+            var node2 = g.Nodes.Add("2");
 
             var edge = new Edge(node1, node2);
             node1.OutgoingEdges.Add(edge);

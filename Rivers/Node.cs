@@ -69,11 +69,15 @@ namespace Rivers
         {
             get;
         }
+
+        public IEnumerable<Edge> GetEdges()
+        {
+            return IncomingEdges.Union(OutgoingEdges);
+        }
         
         public override string ToString()
         {
             return Name;
         }
-        
     }
 }

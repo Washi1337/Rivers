@@ -1,4 +1,5 @@
 ﻿using System;
+using Rivers.Analysis;
 using Xunit;
 
 namespace Rivers.Test
@@ -60,6 +61,21 @@ namespace Rivers.Test
             g1.Nodes.Add(node);
 
             Assert.Throws<ArgumentException>(() => g2.Nodes.Add(node));
+        }
+
+        [Fact]
+        public void RemoveNodeWithEdges()
+        {
+            var g = new Graph();
+            var n1 = g.Nodes.Add("1");
+            var n2 = g.Nodes.Add("2");
+            var e = g.Edges.Add("1", "2");
+
+            g.Nodes.Remove("1");
+            
+            Assert.Empty(n2.IncomingEdges);
+            Assert.Null(n1.ParentGraph);
+            Assert.Null(e.ParentGraph);
         }
     }
 }

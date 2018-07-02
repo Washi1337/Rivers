@@ -111,8 +111,8 @@ namespace Rivers.Collections
             if (item == null || !Contains(item))
                 return false;
 
-            item.Source.IncomingEdges.Remove(item);
-            item.Target.OutgoingEdges.Remove(item);
+            item.Source.OutgoingEdges.Remove(item);
+            item.Target.IncomingEdges.Remove(item);
             return true;
         }
 
