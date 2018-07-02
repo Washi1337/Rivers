@@ -7,6 +7,9 @@
   version: 0.1.0-{branch}-build{build}
   configuration: Release
 
+  before_build:
+    - nuget restore
+    
   build:
     verbosity: minimal
 
