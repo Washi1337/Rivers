@@ -1,0 +1,15 @@
+-
+  branches:
+    only:
+      - master
+
+  image: Visual Studio 2017
+  version: 0.1.0-{branch}-build{build}
+  configuration: Release
+
+  build:
+    verbosity: minimal
+
+  artifacts:
+    - path: Rivers/bin/Release
+      name: Bleeding edge

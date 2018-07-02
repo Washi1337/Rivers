@@ -1,8 +1,14 @@
 Rivers
 ======
+[![Build status](https://ci.appveyor.com/api/projects/status/yak3xv2e06jgcg92/branch/master?svg=true)](https://ci.appveyor.com/project/Washi1337/rivers)
+
 Rivers is a light-weight graphing library written in C#. It contains a model for directed graphs, as well as a whole bunch of standard algorithms to analyse graphs.
 
 Rivers is released under the MIT license.
+
+Binaries
+========
+- [Nightly builds](https://ci.appveyor.com/project/Washi1337/rivers/build/artifacts)
 
 Features
 ========
