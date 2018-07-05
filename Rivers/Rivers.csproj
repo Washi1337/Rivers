@@ -43,6 +43,7 @@
     <Compile Include="Collections\AdjacencyCollection.cs" />
     <Compile Include="Collections\DirectedAdjacencyCollection.cs" />
     <Compile Include="Collections\EdgeCollection.cs" />
+    <Compile Include="Collections\EmptyAdjacencyCollection.cs" />
     <Compile Include="Collections\NodeCollection.cs" />
     <Compile Include="Edge.cs" />
     <Compile Include="EdgeComparer.cs" />

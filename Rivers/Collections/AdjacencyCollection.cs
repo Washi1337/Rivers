@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace Rivers.Collections
 {
+    /// <summary>
+    /// Represents the base for collection of edges either originating, or targeting a node in a graph.
+    /// </summary>
     public abstract class AdjacencyCollection : ICollection<Edge>
     {
         protected AdjacencyCollection(Node origin)

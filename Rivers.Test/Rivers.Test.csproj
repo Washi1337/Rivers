@@ -51,10 +51,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdjacentEdgeCollectionTest.cs" />
+    <Compile Include="DirectedAdjacencyCollectionTest.cs" />
     <Compile Include="Analysis\DominatorInfoTest.cs" />
     <Compile Include="Analysis\SearchTest.cs" />
     <Compile Include="EdgeCollectionTest.cs" />
+    <Compile Include="EmptyAdjacencyCollectionTest.cs" />
     <Compile Include="Generators\CycleGeneratorTest.cs" />
     <Compile Include="Generators\PathGeneratorTest.cs" />
     <Compile Include="GraphTest.cs" />

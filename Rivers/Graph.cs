@@ -11,9 +11,20 @@ namespace Rivers
     public class Graph
     {
         public Graph()
+            : this(true)
         {
+        }
+        
+        public Graph(bool isDirected)
+        {
+            IsDirected = isDirected;
             Nodes = new NodeCollection(this);
             Edges = new EdgeCollection(this);
+        }
+
+        public bool IsDirected
+        {
+            get;
         }
 
         /// <summary>

@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Rivers.Collections
 {
     /// <summary>
-    /// Represents a collection of edges either originating, or targeting a node in a graph.
+    /// Represents a collection of edges either originating, or targeting a node in a directed graph.
     /// </summary>
     public class DirectedAdjacencyCollection : AdjacencyCollection
     {
@@ -29,26 +27,32 @@ namespace Rivers.Collections
         /// <inheritdoc />
         public override int Count => _edges.Count;
 
+        /// <inheritdoc />
         public override Edge this[string neighbour] => _edges[neighbour];
         
+        /// <inheritdoc />
         public override Edge this[Node neighbour] => _edges[neighbour.Name];
 
+        /// <inheritdoc />
         public override bool TryGetEdge(string neighbour, out Edge edge)
         {
             return _edges.TryGetValue(neighbour, out edge);
         }
         
+        /// <inheritdoc />
         public override bool TryGetEdge(Node neighbour, out Edge edge)
         {
             return _edges.TryGetValue(neighbour.Name, out edge) &&
                    ReferenceEquals((Outgoing ? edge.Target : edge.Source), neighbour);
         }
         
+        /// <inheritdoc />
         public override void Add(string neighbour)
         {
             Add(Origin.ParentGraph.Nodes[neighbour]);
         }
 
+        /// <inheritdoc />
         public override void Add(Node neighbour)
         {
             if (neighbour == null)
@@ -60,6 +64,7 @@ namespace Rivers.Collections
                 Add(new Edge(neighbour, Origin));
         }
 
+        /// <inheritdoc />
         public override void Add(Edge edge)
         {
             if (edge == null)
@@ -67,7 +72,7 @@ namespace Rivers.Collections
             
             if (Outgoing && edge.Source != Origin)
                 throw new ArgumentException("Edge must be originating from the origin.");
-            else if (!Outgoing && edge.Target != Origin)
+            if (!Outgoing && edge.Target != Origin)
                 throw new ArgumentException("Edge must have a target equal to the origin.");
 
             var neighbour = Outgoing ? edge.Target : edge.Source;
@@ -82,6 +87,7 @@ namespace Rivers.Collections
             }
         }
 
+        /// <inheritdoc />
         public override void Clear()
         {
             foreach (var item in _edges.Values)
@@ -95,11 +101,13 @@ namespace Rivers.Collections
             _edges.Clear();
         }
 
+        /// <inheritdoc />
         public override bool Contains(string neighbour)
         {
             return neighbour != null && _edges.ContainsKey(neighbour);
         }
 
+        /// <inheritdoc />
         public override bool Contains(Node neighbour)
         {
             return TryGetEdge(neighbour, out _);
@@ -117,11 +125,13 @@ namespace Rivers.Collections
             _edges.Values.CopyTo(array, arrayIndex);
         }
 
+        /// <inheritdoc />
         public override bool Remove(string neighbourName)
         {
             return Contains(neighbourName) && Remove(_edges[neighbourName]);
         }
 
+        /// <inheritdoc />
         public override bool Remove(Node neighbour)
         {
             return Contains(neighbour) && Remove(_edges[neighbour.Name]);

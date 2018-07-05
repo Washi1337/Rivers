@@ -10,12 +10,13 @@ namespace Rivers
     /// </summary>
     public class Node
     {
+        private Graph _parentGraph;
+
         public Node(string name)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
-            
-            IncomingEdges = new DirectedAdjacencyCollection(this, false);
-            OutgoingEdges = new DirectedAdjacencyCollection(this, true);
+            IncomingEdges = new EmptyAdjacencyCollection(this);
+            OutgoingEdges = new EmptyAdjacencyCollection(this);
             UserData = new Dictionary<object, object>();
         }
 
@@ -24,8 +25,15 @@ namespace Rivers
         /// </summary>
         public Graph ParentGraph
         {
-            get;
-            internal set;
+            get => _parentGraph;
+            internal set
+            {
+                if (_parentGraph != value)
+                {
+                    _parentGraph = value;
+                    OnParentGraphChanged();
+                }
+            }
         }
 
         /// <summary>
@@ -52,6 +60,7 @@ namespace Rivers
         public AdjacencyCollection IncomingEdges
         {
             get;
+            private set;
         }
 
         /// <summary>
@@ -60,6 +69,7 @@ namespace Rivers
         public AdjacencyCollection OutgoingEdges
         {
             get;
+            private set;
         }
 
         /// <summary>
@@ -78,6 +88,25 @@ namespace Rivers
         public override string ToString()
         {
             return Name;
+        }
+
+        protected virtual void OnParentGraphChanged()
+        {
+            if (ParentGraph == null)
+            {
+                IncomingEdges = new EmptyAdjacencyCollection(this);
+                OutgoingEdges = new EmptyAdjacencyCollection(this);
+            }
+            else if (ParentGraph.IsDirected)
+            {
+                IncomingEdges = new DirectedAdjacencyCollection(this, false);
+                OutgoingEdges = new DirectedAdjacencyCollection(this, true);
+            }
+            else
+            {
+                // TODO: Undirected
+                throw new NotImplementedException();
+            }
         }
     }
 }
