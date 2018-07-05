@@ -40,7 +40,8 @@
   <ItemGroup>
     <Compile Include="Analysis\DominatorInfo.cs" />
     <Compile Include="Analysis\Search.cs" />
-    <Compile Include="Collections\AdjacentEdgeCollection.cs" />
+    <Compile Include="Collections\AdjacencyCollection.cs" />
+    <Compile Include="Collections\DirectedAdjacencyCollection.cs" />
     <Compile Include="Collections\EdgeCollection.cs" />
     <Compile Include="Collections\NodeCollection.cs" />
     <Compile Include="Edge.cs" />

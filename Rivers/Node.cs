@@ -14,8 +14,8 @@ namespace Rivers
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             
-            IncomingEdges = new AdjacentEdgeCollection(this, false);
-            OutgoingEdges = new AdjacentEdgeCollection(this, true);
+            IncomingEdges = new DirectedAdjacencyCollection(this, false);
+            OutgoingEdges = new DirectedAdjacencyCollection(this, true);
             UserData = new Dictionary<object, object>();
         }
 
@@ -49,7 +49,7 @@ namespace Rivers
         /// <summary>
         /// Gets a collection of edges that are towards the node.
         /// </summary>
-        public AdjacentEdgeCollection IncomingEdges
+        public AdjacencyCollection IncomingEdges
         {
             get;
         }
@@ -57,7 +57,7 @@ namespace Rivers
         /// <summary>
         /// Gets a collection of edges originating from the node.
         /// </summary>
-        public AdjacentEdgeCollection OutgoingEdges
+        public AdjacencyCollection OutgoingEdges
         {
             get;
         }
