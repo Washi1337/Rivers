@@ -50,6 +50,7 @@
     <Compile Include="Collections\UndirectedEdgeCollection.cs" />
     <Compile Include="Edge.cs" />
     <Compile Include="EdgeComparer.cs" />
+    <Compile Include="Generators\CompleteGraphGenerator.cs" />
     <Compile Include="Generators\CycleGenerator.cs" />
     <Compile Include="Generators\IGraphGenerator.cs" />
     <Compile Include="Generators\PathGenerator.cs" />

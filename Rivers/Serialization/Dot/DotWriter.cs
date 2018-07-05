@@ -113,7 +113,7 @@ namespace Rivers.Serialization.Dot
 
         private static bool NeedsEscaping(string text)
         {
-            return text.Any(c => EscapedCharacters.ContainsKey(c));
+            return text.Any(c => EscapedCharacters.ContainsKey(c) || !char.IsLetterOrDigit(c));
         }
 
         private void WriteEscapedCharacter(char c)

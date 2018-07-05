@@ -101,5 +101,31 @@ namespace Rivers
                 Edges.Add(edge);
             }
         }
+
+        public void DisjointUnionWith(Graph other, string nodePrefix, bool includeUserData=true)
+        {
+            foreach (var otherNode in other.Nodes)
+            {
+                var node = new Node(nodePrefix + otherNode.Name);
+                if (includeUserData)
+                {
+                    foreach (var entry in otherNode.UserData)
+                        node.UserData[entry.Key] = entry.Value;
+                }
+                Nodes.Add(node);
+            }
+
+            foreach (var otherEdge in other.Edges)
+            {
+                var edge = new Edge(Nodes[nodePrefix + otherEdge.Source.Name], Nodes[nodePrefix + otherEdge.Target.Name]);
+                if (includeUserData)
+                {
+                    foreach (var entry in otherEdge.UserData)
+                        edge.UserData[entry.Key] = entry.Value;
+                }
+                Edges.Add(edge);
+            }
+        }
+        
     }
 }
