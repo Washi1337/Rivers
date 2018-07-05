@@ -30,8 +30,6 @@ namespace Rivers.Serialization.Dot
         /// <exception cref="NotSupportedException">Occurs when the dot file contains an undirected graph.</exception>
         public Graph Read()
         {
-            _graph = new Graph();
-
             if (_tokenizer.Peek().Terminal == DotTerminal.Strict)
             {
                 // Ignore.
@@ -39,13 +37,18 @@ namespace Rivers.Serialization.Dot
             }
 
             var graphType = ExpectOneOf(DotTerminal.DiGraph, DotTerminal.Graph);
+            bool directed = false;
             switch (graphType.Terminal)
             {
                 case DotTerminal.DiGraph:
+                    directed = true;
                     break;
                 case DotTerminal.Graph:
-                    throw new NotSupportedException("Undirected graphs not supported.");
+                    directed = false;
+                    break;
             }
+
+            _graph = new Graph(directed);
 
             ExpectOneOf(DotTerminal.OpenBrace);
             ReadStatementList();
@@ -98,7 +101,7 @@ namespace Rivers.Serialization.Dot
         /// <returns>True if it succeeded, false otherwise.</returns>
         private bool TryReadEdgeStatement(string sourceName)
         {
-            var edgeOp = TryExpectOneOf(DotTerminal.DirectedEdge, DotTerminal.UndirectedEdge);
+            var edgeOp = TryExpectOneOf(_graph.IsDirected ? DotTerminal.DirectedEdge : DotTerminal.UndirectedEdge);
             if (edgeOp == null)
                 return false;
             

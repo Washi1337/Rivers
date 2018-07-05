@@ -123,11 +123,10 @@ namespace Rivers.Collections
         /// <inheritdoc />
         public IEnumerator<Edge> GetEnumerator()
         {
-            foreach (var node in ParentGraph.Nodes)
-            {
-                foreach (var edge in node.IncomingEdges)
-                    yield return edge;
-            }
+            var edges = ParentGraph.Nodes.SelectMany(x => x.IncomingEdges);
+            if (!ParentGraph.IsDirected)
+                edges = edges.Distinct();
+            return edges.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

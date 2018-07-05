@@ -28,6 +28,9 @@ namespace Rivers
                 return true;
             if (ReferenceEquals(x, null) || ReferenceEquals(y, null))
                 return false;
+
+            if (x.IsDirected != y.IsDirected)
+                return false;
             
             if (x.Nodes.Count != y.Nodes.Count || x.Edges.Count != y.Edges.Count)
                 return false;

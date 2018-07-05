@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Rivers.Serialization;
 using Rivers.Serialization.Dot;
 using Xunit;
 
@@ -7,11 +8,23 @@ namespace Rivers.Test.Serialization.Dot
     public class DotReaderTest
     {
         [Fact]
-        public void EmptyGraph()
+        public void EmptyDiGraph()
         {
-            var g = new Graph();
+            var g = new Graph(true);
             
             var reader = new StringReader("strict digraph { }");
+            var dotReader = new DotReader(reader);
+
+            var h = dotReader.Read();
+            Assert.Equal(g, h, new GraphComparer());
+        }
+        
+        [Fact]
+        public void EmptyGraph()
+        {
+            var g = new Graph(false);
+            
+            var reader = new StringReader("strict graph { }");
             var dotReader = new DotReader(reader);
 
             var h = dotReader.Read();
@@ -40,7 +53,7 @@ namespace Rivers.Test.Serialization.Dot
         }
         
         [Fact]
-        public void SimpleEdges()
+        public void SimpleDirectedEdges()
         {
             var g = new Graph();
             g.Nodes.Add("A");
@@ -63,6 +76,48 @@ namespace Rivers.Test.Serialization.Dot
 
             var h = dotReader.Read();
             Assert.Equal(g, h, new GraphComparer());
+        }
+        
+        [Fact]
+        public void SimpleUndirectedEdges()
+        {
+            var g = new Graph(false);
+            g.Nodes.Add("A");
+            g.Nodes.Add("B");
+            g.Nodes.Add("C");
+
+            g.Edges.Add("A", "B");
+            g.Edges.Add("B", "C");
+            
+            var reader = new StringReader(
+                @"strict graph { 
+    A
+    B
+    C
+
+    A -- B
+    B -- C
+}");
+            var dotReader = new DotReader(reader);
+
+            var h = dotReader.Read();
+            Assert.Equal(g, h, new GraphComparer());
+        }
+        
+        [Fact]
+        public void UndirectedEdgesInDirectedGraph()
+        {
+            var reader = new StringReader(
+                @"strict digraph { 
+    A
+    B
+    C
+
+    A -- B
+    B -- C
+}");
+            var dotReader = new DotReader(reader);
+            Assert.Throws<SyntaxException>(() => dotReader.Read());
         }
         
         [Fact]

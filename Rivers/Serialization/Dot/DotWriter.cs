@@ -31,7 +31,7 @@ namespace Rivers.Serialization.Dot
         /// <param name="graph">The graph to write.</param>
         public void Write(Graph graph)
         {
-            WriteHeader();
+            WriteHeader(graph.IsDirected);
             
             foreach (var node in graph.Nodes)
                 Write(node);
@@ -42,9 +42,9 @@ namespace Rivers.Serialization.Dot
             WriteFooter();
         }
 
-        private void WriteHeader()
+        private void WriteHeader(bool directed)
         {
-            _writer.WriteLine("strict digraph {");
+            _writer.WriteLine(directed ? "strict digraph {" : "strict graph {");
         }
 
         private void WriteFooter()
@@ -69,7 +69,7 @@ namespace Rivers.Serialization.Dot
         private void Write(Edge edge)
         {
             WriteIdentifier(edge.Source.Name);
-            _writer.Write(" -> ");
+            _writer.Write(edge.ParentGraph.IsDirected ? " -> " : "--");
             WriteIdentifier(edge.Target.Name);
             
             if (edge.UserData.Count > 0)

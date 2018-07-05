@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Rivers.Serialization.Dot;
 using Xunit;
 
@@ -11,7 +12,7 @@ namespace Rivers.Test.Serialization.Dot
             var writer = new StringWriter();
             var dotWriter = new DotWriter(writer);
             dotWriter.Write(g);
-
+            
             var reader = new StringReader(writer.ToString());
             var dotReader = new DotReader(reader);
             var h = dotReader.Read();
@@ -22,7 +23,15 @@ namespace Rivers.Test.Serialization.Dot
         [Fact]
         public void EmptyGraph()
         {
-            var g = new Graph();
+            var g = new Graph(false);
+
+            Validate(g);
+        }
+        
+        [Fact]
+        public void EmptyDiGraph()
+        {
+            var g = new Graph(true);
 
             Validate(g);
         }
@@ -39,9 +48,9 @@ namespace Rivers.Test.Serialization.Dot
         }
         
         [Fact]
-        public void SimpleEdges()
+        public void SimpleUndirectedEdges()
         {
-            var g = new Graph();
+            var g = new Graph(false);
             g.Nodes.Add("A");
             g.Nodes.Add("B");
             g.Nodes.Add("C");
@@ -53,9 +62,9 @@ namespace Rivers.Test.Serialization.Dot
         }
         
         [Fact]
-        public void OnlyEdges()
+        public void SimpleDirectedEdges()
         {
-            var g = new Graph();
+            var g = new Graph(true);
             g.Nodes.Add("A");
             g.Nodes.Add("B");
             g.Nodes.Add("C");
@@ -65,7 +74,7 @@ namespace Rivers.Test.Serialization.Dot
 
             Validate(g);
         }
-
+        
         [Fact]
         public void EscapedIdentifiers()
         {
