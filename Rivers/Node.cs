@@ -94,8 +94,7 @@ namespace Rivers
         {
             if (ParentGraph == null)
             {
-                IncomingEdges = new EmptyAdjacencyCollection(this);
-                OutgoingEdges = new EmptyAdjacencyCollection(this);
+                IncomingEdges = OutgoingEdges = new EmptyAdjacencyCollection(this);
             }
             else if (ParentGraph.IsDirected)
             {
@@ -104,8 +103,7 @@ namespace Rivers
             }
             else
             {
-                IncomingEdges = new UndirectedAdjacencyCollection(this);
-                OutgoingEdges = new UndirectedAdjacencyCollection(this);
+                IncomingEdges = OutgoingEdges = new UndirectedAdjacencyCollection(this);
             }
         }
     }

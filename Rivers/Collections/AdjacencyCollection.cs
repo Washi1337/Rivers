@@ -64,13 +64,16 @@ namespace Rivers.Collections
         /// <param name="edge">The edge either originating, or going to the provided neighbour.</param>
         /// <returns>True if the edge is present, false otherwise.</returns>
         public abstract bool TryGetEdge(Node neighbour, out Edge edge);
-        
+
         /// <summary>
         /// Adds a new edge to the node, either originating or towards a new neighbour, depending on the value of <see cref="Outgoing"/>.
         /// </summary>
         /// <param name="neighbourName">The name of the neighbour.</param>
-        public abstract void Add(string neighbourName);
-        
+        public virtual void Add(string neighbourName)
+        {
+            Add(Origin.ParentGraph.Nodes[neighbourName]);
+        }
+
         /// <summary>
         /// Adds a new edge to the node, either originating or towards a new neighbour, depending on the value of <see cref="Outgoing"/>.
         /// </summary>
@@ -84,18 +87,24 @@ namespace Rivers.Collections
         public abstract void Clear();
 
         /// <summary>
-        /// Determines whether there exists an edge from/to the given node, depending on the value of <see cref="Outgoing"/>.   
+        /// Determines whether there exists an edge from/to the given node.  
         /// </summary>
         /// <param name="neighbourName">The name of the neighbour.</param>
         /// <returns>True if there exists an edge, false otherwise.</returns>
-        public abstract bool Contains(string neighbourName);
-        
+        public virtual bool Contains(string neighbourName)
+        {
+            return TryGetEdge(neighbourName, out _);
+        }
+
         /// <summary>
-        /// Determines whether there exists an edge from/to the given node, depending on the value of <see cref="Outgoing"/>.   
+        /// Determines whether there exists an edge from/to the given node.   
         /// </summary>
         /// <param name="neighbour">The neighbour.</param>
         /// <returns>True if there exists an edge, false otherwise.</returns>
-        public abstract bool Contains(Node neighbour);
+        public virtual bool Contains(Node neighbour)
+        {
+            return TryGetEdge(neighbour, out _);
+        }
         
         /// <inheritdoc />
         public abstract bool Contains(Edge edge);
@@ -108,8 +117,11 @@ namespace Rivers.Collections
         /// </summary>
         /// <param name="neighbourName">The name of the neighbour.</param>
         /// <returns>True if it succeeded, false otherwise.</returns>
-        public abstract bool Remove(string neighbourName);
-        
+        public virtual bool Remove(string neighbourName)
+        {
+            return Contains(neighbourName) && Remove(Origin.ParentGraph.Nodes[neighbourName]);
+        }
+
         /// <summary>
         /// Tries to remove an edge to the given neighbour.
         /// </summary>

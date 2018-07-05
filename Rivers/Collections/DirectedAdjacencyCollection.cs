@@ -54,13 +54,6 @@ namespace Rivers.Collections
             return _edges.TryGetValue(neighbour.Name, out edge) &&
                    ReferenceEquals((Outgoing ? edge.Target : edge.Source), neighbour);
         }
-        
-        /// <inheritdoc />
-        public override void Add(string neighbourName)
-        {
-            Add(Origin.ParentGraph.Nodes[neighbourName]);
-        }
-
         /// <inheritdoc />
         public override void Add(Node neighbour)
         {
@@ -111,18 +104,6 @@ namespace Rivers.Collections
         }
 
         /// <inheritdoc />
-        public override bool Contains(string neighbourName)
-        {
-            return TryGetEdge(neighbourName, out _);
-        }
-
-        /// <inheritdoc />
-        public override bool Contains(Node neighbour)
-        {
-            return TryGetEdge(neighbour, out _);
-        }
-
-        /// <inheritdoc />
         public override bool Contains(Edge item)
         {
             return item != null && _edges.ContainsKey((Outgoing ? item.Target : item.Source).Name);
@@ -132,12 +113,6 @@ namespace Rivers.Collections
         public override void CopyTo(Edge[] array, int arrayIndex)
         {
             _edges.Values.CopyTo(array, arrayIndex);
-        }
-
-        /// <inheritdoc />
-        public override bool Remove(string neighbourName)
-        {
-            return Contains(neighbourName) && Remove(_edges[neighbourName]);
         }
 
         /// <inheritdoc />

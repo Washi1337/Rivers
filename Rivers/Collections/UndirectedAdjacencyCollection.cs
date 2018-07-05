@@ -37,12 +37,7 @@ namespace Rivers.Collections
             return _edges.TryGetValue(neighbour.Name, out edge) &&
                    (ReferenceEquals(edge.Source, neighbour) || ReferenceEquals(edge.Target, neighbour));
         }
-
-        public override void Add(string neighbourName)
-        {
-            Add(Origin.ParentGraph.Nodes[neighbourName]);
-        }
-
+        
         public override void Add(Node neighbour)
         {
             if (neighbour == null)
@@ -65,7 +60,6 @@ namespace Rivers.Collections
             {
                 _edges.Add(neighbour.Name, edge);
                 neighbour.IncomingEdges.Add(edge);
-                neighbour.OutgoingEdges.Add(edge);
             }
         }
 
@@ -74,24 +68,11 @@ namespace Rivers.Collections
             foreach (var item in _edges.Values)
             {
                 item.Target.IncomingEdges.Remove(item);
-                item.Source.OutgoingEdges.Remove(item);
             }
             
             _edges.Clear();
         }
         
-        /// <inheritdoc />
-        public override bool Contains(string neighbourName)
-        {
-            return TryGetEdge(neighbourName, out _);
-        }
-
-        /// <inheritdoc />
-        public override bool Contains(Node neighbour)
-        {
-            return TryGetEdge(neighbour, out _);
-        }
-
         public override bool Contains(Edge edge)
         {
             return edge != null
@@ -102,11 +83,6 @@ namespace Rivers.Collections
         public override void CopyTo(Edge[] array, int arrayIndex)
         {
             _edges.Values.CopyTo(array, arrayIndex);
-        }
-
-        public override bool Remove(string neighbourName)
-        {
-            return Contains(neighbourName) && Remove(_edges[neighbourName]);
         }
 
         public override bool Remove(Node neighbour)
@@ -124,7 +100,6 @@ namespace Rivers.Collections
             {
                 _edges.Remove(neighbour.Name);
                 edge.Target.IncomingEdges.Remove(edge);
-                edge.Source.OutgoingEdges.Remove(edge);
                 return true;
             }
 
