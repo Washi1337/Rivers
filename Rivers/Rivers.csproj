@@ -42,10 +42,12 @@
     <Compile Include="Analysis\Search.cs" />
     <Compile Include="Collections\AdjacencyCollection.cs" />
     <Compile Include="Collections\DirectedAdjacencyCollection.cs" />
+    <Compile Include="Collections\DirectedEdgeCollection.cs" />
     <Compile Include="Collections\EdgeCollection.cs" />
     <Compile Include="Collections\EmptyAdjacencyCollection.cs" />
     <Compile Include="Collections\NodeCollection.cs" />
     <Compile Include="Collections\UndirectedAdjacencyCollection.cs" />
+    <Compile Include="Collections\UndirectedEdgeCollection.cs" />
     <Compile Include="Edge.cs" />
     <Compile Include="EdgeComparer.cs" />
     <Compile Include="Generators\CycleGenerator.cs" />

@@ -19,7 +19,11 @@ namespace Rivers
         {
             IsDirected = isDirected;
             Nodes = new NodeCollection(this);
-            Edges = new EdgeCollection(this);
+            
+            if (isDirected)
+                Edges = new DirectedEdgeCollection(this);
+            else
+                Edges = new UndirectedEdgeCollection(this);
         }
 
         public bool IsDirected
