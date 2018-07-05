@@ -26,7 +26,11 @@ namespace Rivers.Collections
         /// <inheritdoc />
         public int Count
         {
-            get { return ParentGraph.Nodes.Sum(x => x.IncomingEdges.Count); }
+            get
+            {
+                int count = ParentGraph.Nodes.Sum(x => x.IncomingEdges.Count);
+                return ParentGraph.IsDirected ? count : count / 2;
+            }
         }
 
         /// <inheritdoc />

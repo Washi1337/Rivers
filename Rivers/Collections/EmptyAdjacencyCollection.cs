@@ -18,7 +18,7 @@ namespace Rivers.Collections
         public override int Count => 0;
 
         /// <inheritdoc />
-        public override Edge this[string neighbour] => throw new KeyNotFoundException();
+        public override Edge this[string neighbourName] => throw new KeyNotFoundException();
 
         /// <inheritdoc />
         public override Edge this[Node neighbour] => throw new KeyNotFoundException();
@@ -84,7 +84,7 @@ namespace Rivers.Collections
         }
 
         /// <inheritdoc />
-        public override bool Remove(Edge item)
+        public override bool Remove(Edge edge)
         {
             return false;
         }

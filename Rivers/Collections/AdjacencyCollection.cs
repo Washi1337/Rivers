@@ -34,8 +34,8 @@ namespace Rivers.Collections
         /// <summary>
         /// Gets an edge based on the name of a neighbour.
         /// </summary>
-        /// <param name="neighbour">The name of the neighbour.</param>
-        public abstract Edge this[string neighbour]
+        /// <param name="neighbourName">The name of the neighbour.</param>
+        public abstract Edge this[string neighbourName]
         {
             get;
         }
@@ -118,7 +118,7 @@ namespace Rivers.Collections
         public abstract bool Remove(Node neighbour);
         
         /// <inheritdoc />
-        public abstract bool Remove(Edge item);
+        public abstract bool Remove(Edge edge);
 
         /// <inheritdoc />
         public abstract IEnumerator<Edge> GetEnumerator();

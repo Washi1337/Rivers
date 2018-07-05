@@ -104,8 +104,8 @@ namespace Rivers
             }
             else
             {
-                // TODO: Undirected
-                throw new NotImplementedException();
+                IncomingEdges = new UndirectedAdjacencyCollection(this);
+                OutgoingEdges = new UndirectedAdjacencyCollection(this);
             }
         }
     }

@@ -45,6 +45,7 @@
     <Compile Include="Collections\EdgeCollection.cs" />
     <Compile Include="Collections\EmptyAdjacencyCollection.cs" />
     <Compile Include="Collections\NodeCollection.cs" />
+    <Compile Include="Collections\UndirectedAdjacencyCollection.cs" />
     <Compile Include="Edge.cs" />
     <Compile Include="EdgeComparer.cs" />
     <Compile Include="Generators\CycleGenerator.cs" />

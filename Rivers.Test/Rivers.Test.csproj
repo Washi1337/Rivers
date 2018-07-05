@@ -63,6 +63,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization\Dot\DotReaderTest.cs" />
     <Compile Include="Serialization\Dot\DotWriterTest.cs" />
+    <Compile Include="UndirectedAdjacencyCollectionTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Rivers\Rivers.csproj">
