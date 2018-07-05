@@ -2,7 +2,7 @@ Rivers
 ======
 [![Build status](https://ci.appveyor.com/api/projects/status/yak3xv2e06jgcg92/branch/master?svg=true)](https://ci.appveyor.com/project/Washi1337/rivers)
 
-Rivers is a light-weight graphing library written in C#. It contains a model for directed graphs, as well as a whole bunch of standard algorithms to analyse graphs.
+Rivers is a light-weight graphing library written in C#. It contains a model for directed and undirected graphs, as well as a whole bunch of standard algorithms to analyse graphs.
 
 Rivers is released under the MIT license.
 
@@ -16,6 +16,7 @@ Features
     - Optimised for quick insertion of nodes and edges.
     - Minimal memory footprint.
     - Efficient for sparse graphs.
+- Support for directed as well as undirected graphs. The default is directed.
 - Various graph generators to help building up common graph structures.
 - Various built-in node traversal and search algorithms (including breadth first, depth first and more).
 - Built-in dominator analysis. Useful for control flow graph analysis.
@@ -43,6 +44,11 @@ graph.Nodes.Add("3");
 // Add edges.
 graph.Edges.Add(new Edge("1", "2"));
 graph.Edges.Add("2", "3");
+```
+
+By default, graphs are directed. If you want an undirected graph, use the second constructor:
+```csharp
+var graph = new Graph(false);
 ```
 
 Inspecting and editing nodes
@@ -98,7 +104,7 @@ The `Rivers.Generators` namespace contains various graph generators for building
 ```csharp
 using Rivers.Generators;
 
-var generator = new PathGenerator(5);
+var generator = new PathGenerator(true, 5);
 var pathGraph = generator.GenerateGraph();
 // pathGraph now contains the graph:
 // 1 -> 2 -> 3 -> 4 -> 5
