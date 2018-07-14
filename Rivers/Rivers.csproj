@@ -38,6 +38,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Analysis\Categorization.cs" />
     <Compile Include="Analysis\DominatorInfo.cs" />
     <Compile Include="Analysis\Search.cs" />
     <Compile Include="Collections\AdjacencyCollection.cs" />

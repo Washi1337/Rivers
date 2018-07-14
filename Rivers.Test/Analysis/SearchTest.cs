@@ -65,41 +65,5 @@ namespace Rivers.Test.Analysis
                 Assert.True(order.IndexOf(Tree.Nodes["5"]) < order.IndexOf(Tree.Nodes["4A"]));
         }
 
-        [Fact]
-        public void CyclicTest()
-        {
-            var g = new Graph();
-            g.Nodes.Add("1");
-            g.Nodes.Add("2");
-            g.Nodes.Add("3");
-            g.Nodes.Add("4");
-            g.Nodes.Add("5");
-
-            g.Edges.Add("1", "2");
-            g.Edges.Add("2", "3");
-            g.Edges.Add("3", "1");
-            
-            g.Edges.Add("4", "5");
-            
-            Assert.True(g.IsCyclic());
-        }
-
-        [Fact]
-        public void AcyclicTest()
-        {
-            var g = new Graph();
-            g.Nodes.Add("1");
-            g.Nodes.Add("2");
-            g.Nodes.Add("3");
-            g.Nodes.Add("4");
-            g.Nodes.Add("5");
-
-            g.Edges.Add("1", "2");
-            g.Edges.Add("2", "3");
-            
-            g.Edges.Add("4", "5");
-            
-            Assert.False(g.IsCyclic());
-        }
     }
 }

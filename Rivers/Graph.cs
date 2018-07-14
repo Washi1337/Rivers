@@ -126,6 +126,18 @@ namespace Rivers
                 Edges.Add(edge);
             }
         }
+
+        public Graph ToUndirected()
+        {
+            var g = new Graph(false);
+            
+            foreach (var node in Nodes)
+                g.Nodes.Add(node.Name);
+            foreach (var edge in Edges)
+                g.Edges.Add(edge.Source.Name, edge.Target.Name);
+
+            return g;
+        }
         
     }
 }

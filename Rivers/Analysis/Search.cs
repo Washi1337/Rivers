@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 
 namespace Rivers.Analysis
 {
@@ -9,6 +10,8 @@ namespace Rivers.Analysis
     /// </summary>
     public static class Search
     {
+        public delegate bool ContinuationDelegate(Node origin, Edge edgeToTraverse);
+        
         /// <summary>
         /// Gets a collection of predecessor nodes, given by the incoming edges of the given node.
         /// </summary>
@@ -71,27 +74,37 @@ namespace Rivers.Analysis
         }
 
         /// <summary>
-        /// Performs a traversal all descendants of a node in a breadth first order, and yields
+        /// Performs a traversal of all descendants of a node in a breadth first order, and yields
         /// on every node it visits.
         /// </summary>
         /// <param name="start">The node in the graph to start the traversal at.</param>
         /// <returns>A lazy loaded ordered collection representing all nodes it traversed.</returns>
-        public static IEnumerable<Node> BreadthFirstTraversal(this Node start)
+        public static IEnumerable<Node> BreadthFirstTraversal(this Node start, bool revisit = false)
+        {
+            var visited = new HashSet<Node> {start};
+            return BreadthFirstTraversal(start, (n, e) => visited.Add(e.GetOtherNode(n)) || revisit);
+        }
+
+        /// <summary>
+        /// Performs a traversl of all descendants of a node in a breadth first order, and yields
+        /// on every node it visits. An edge is traversed when the given condition is met.
+        /// </summary>
+        /// <param name="start">The node in the graph to start the travesal at.</param>
+        /// <param name="continueCondition">The condition an edge has to met in order to be traversed.</param>
+        /// <returns></returns>
+        public static IEnumerable<Node> BreadthFirstTraversal(this Node start, ContinuationDelegate continueCondition)
         {
             var queue = new Queue<Node>();
-            var visited = new HashSet<Node>();
-
             queue.Enqueue(start);
             
             while (queue.Count > 0)
             {
                 var current = queue.Dequeue();
-                
-                if (visited.Add(current))
+                yield return current;
+                foreach (var edge in current.OutgoingEdges)
                 {
-                    yield return current;
-                    foreach (var edge in current.OutgoingEdges)
-                        queue.Enqueue(edge.Target);
+                    if (continueCondition(current, edge))
+                        queue.Enqueue(edge.GetOtherNode(current));
                 }
             }
         }
@@ -108,34 +121,39 @@ namespace Rivers.Analysis
         }
 
         /// <summary>
-        /// Performs a traversal all descendants of a node in a depth first order, and yields
+        /// Performs a traversal on all descendants of a node in a depth first order, and yields
         /// on every node it visits.
         /// </summary>
         /// <param name="start">The node in the graph to start the traversal at.</param>
         /// <returns>A lazy loaded ordered collection containing all nodes it traversed.</returns>
         public static IEnumerable<Node> DepthFirstTraversal(this Node start, bool revisit = false)
         {
-            var stack = new Stack<Node>();
-            var visited = new HashSet<Node>();
+            var visited = new HashSet<Node> {start};
+            return DepthFirstTraversal(start, (n, e) => visited.Add(e.GetOtherNode(n)) || revisit);
+        }
 
+        /// <summary>
+        /// Performs a traversal on all descendants of a node in a depth first order, and yields
+        /// on every node it visits. 
+        /// </summary>
+        /// <param name="start">The node in the graph to start the travesal at.</param>
+        /// <param name="continueCondition">The condition an edge has to met in order to be traversed.</param>
+        /// <returns>A lazy loaded ordered collection containing all nodes it traversed.</returns>
+        public static IEnumerable<Node> DepthFirstTraversal(this Node start, ContinuationDelegate continueCondition)
+        {           
+            var stack = new Stack<Node>();
             stack.Push(start);
             
             while (stack.Count > 0)
             {
                 var current = stack.Pop();
-                if (visited.Add(current) || revisit)
+                yield return current;
+                foreach (var edge in current.OutgoingEdges)
                 {
-                    yield return current;
-                    foreach (var successor in current.GetSuccessors())
-                        stack.Push(successor);
+                    if (continueCondition(current, edge))
+                        stack.Push(edge.GetOtherNode(current));
                 }
-            }
+            }            
         }
-
-        public static bool IsCyclic(this Graph graph)
-        {
-            return graph.Nodes.Any(x => x.DepthFirstTraversal(true).Skip(1).Contains(x));
-        }
-        
     }
 }

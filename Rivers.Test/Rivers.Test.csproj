@@ -51,6 +51,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Analysis\CategorizationTest.cs" />
     <Compile Include="DirectedAdjacencyCollectionTest.cs" />
     <Compile Include="Analysis\DominatorInfoTest.cs" />
     <Compile Include="Analysis\SearchTest.cs" />

@@ -57,6 +57,11 @@ namespace Rivers
             get;
         }
 
+        public Node GetOtherNode(Node sourceOrTarget)
+        {
+            return sourceOrTarget == Source ? Target : Source;
+        }
+
         protected bool Equals(Edge other)
         {
             return Equals(Source, other.Source) && Equals(Target, other.Target);
