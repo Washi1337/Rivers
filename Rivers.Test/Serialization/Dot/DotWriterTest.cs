@@ -7,10 +7,11 @@ namespace Rivers.Test.Serialization.Dot
 {
     public class DotWriterTest
     {     
-        private static void Validate(Graph g)
+        private static void Validate(Graph g, bool separate)
         {
             var writer = new StringWriter();
             var dotWriter = new DotWriter(writer);
+            dotWriter.SeparateNodesAndEdges = separate;
             dotWriter.Write(g);
             
             var reader = new StringReader(writer.ToString());
@@ -25,7 +26,7 @@ namespace Rivers.Test.Serialization.Dot
         {
             var g = new Graph(false);
 
-            Validate(g);
+            Validate(g, false);
         }
         
         [Fact]
@@ -33,7 +34,7 @@ namespace Rivers.Test.Serialization.Dot
         {
             var g = new Graph(true);
 
-            Validate(g);
+            Validate(g, false);
         }
 
         [Fact]
@@ -44,11 +45,13 @@ namespace Rivers.Test.Serialization.Dot
             g.Nodes.Add("B");
             g.Nodes.Add("C");
 
-            Validate(g);
+            Validate(g, false);
         }
         
-        [Fact]
-        public void SimpleUndirectedEdges()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void SimpleUndirectedEdges(bool separate)
         {
             var g = new Graph(false);
             g.Nodes.Add("A");
@@ -58,11 +61,13 @@ namespace Rivers.Test.Serialization.Dot
             g.Edges.Add("A", "B");
             g.Edges.Add("B", "C");
 
-            Validate(g);
+            Validate(g, separate);
         }
         
-        [Fact]
-        public void SimpleDirectedEdges()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void SimpleDirectedEdges(bool separate)
         {
             var g = new Graph(true);
             g.Nodes.Add("A");
@@ -72,11 +77,13 @@ namespace Rivers.Test.Serialization.Dot
             g.Edges.Add("A", "B");
             g.Edges.Add("B", "C");
 
-            Validate(g);
+            Validate(g, separate);
         }
         
-        [Fact]
-        public void EscapedIdentifiers()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void EscapedIdentifiers(bool separate)
         {
             var g = new Graph();
             g.Nodes.Add("A\"A");
@@ -85,11 +92,13 @@ namespace Rivers.Test.Serialization.Dot
 
             g.Edges.Add("B\"B", "C\"C");
 
-            Validate(g);
+            Validate(g, separate);
         }
 
-        [Fact]
-        public void NodeAttributes()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void NodeAttributes(bool separate)
         {            
             var g = new Graph();
             g.Nodes.Add("A").UserData["color"] = "red";
@@ -97,11 +106,13 @@ namespace Rivers.Test.Serialization.Dot
             g.Nodes.Add("C").UserData["color"] = "green";
             g.Nodes["C"].UserData["style"] = "dashed";
 
-            Validate(g);
+            Validate(g, separate);
         }
 
-        [Fact]
-        public void EdgeAttributes()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void EdgeAttributes(bool separate)
         {            
             var g = new Graph();
             g.Nodes.Add("A");
@@ -112,7 +123,7 @@ namespace Rivers.Test.Serialization.Dot
             g.Edges.Add("B", "C").UserData["color"] = "red";
             g.Nodes["B"].OutgoingEdges["C"].UserData["style"] = "dashed";
 
-            Validate(g);
+            Validate(g, separate);
         }
     }
 }

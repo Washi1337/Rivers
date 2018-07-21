@@ -11,17 +11,28 @@ namespace Rivers.Serialization.Dot
     /// </summary>
     public class DotReader
     {
+        // Reference:
         // https://www.graphviz.org/doc/info/lang.html
         
         private readonly DotTokenizer _tokenizer;
         private readonly Stack<Graph> _graphs = new Stack<Graph>();
 
+        /// <summary>
+        /// Creates a new dot file reader.
+        /// </summary>
+        /// <param name="reader">The reader responsible for reading the dot file.</param>
         public DotReader(TextReader reader)
+            : this(new DotTokenizer(reader))
         {
-            if (reader == null) 
-                throw new ArgumentNullException(nameof(reader));
-            
-            _tokenizer = new DotTokenizer(reader);
+        }
+
+        /// <summary>
+        /// Creates a new dot file reader.
+        /// </summary>
+        /// <param name="tokenizer">The tokenizer responsible for providing the token stream of a dot file.</param>
+        public DotReader(DotTokenizer tokenizer)
+        {
+            _tokenizer = tokenizer ?? throw new ArgumentNullException(nameof(tokenizer));
         }
 
         /// <summary>

@@ -20,11 +20,25 @@ namespace Rivers.Serialization.Dot
         
         private readonly TextWriter _writer;
 
+        /// <summary>
+        /// Creates a new dot writer. 
+        /// </summary>
+        /// <param name="writer">The writer responsible for writing the output.</param>
         public DotWriter(TextWriter writer)
         {
             _writer = writer ?? throw new ArgumentNullException(nameof(writer));
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether nodes in the output file should be explicitly defined before the
+        /// edges are defined.
+        /// </summary>
+        public bool SeparateNodesAndEdges
+        {
+            get;
+            set;
+        } = true;
+        
         /// <summary>
         /// Writes a graph to the character stream.
         /// </summary>
@@ -32,10 +46,17 @@ namespace Rivers.Serialization.Dot
         public void Write(Graph graph)
         {
             WriteHeader(graph.IsDirected);
-            
+
             foreach (var node in graph.Nodes)
-                Write(node);
-            
+            {
+                if (SeparateNodesAndEdges
+                    || node.UserData.Count > 0
+                    || node.InDegree == 0 && node.OutDegree == 0)
+                {
+                    Write(node);
+                }
+            }
+
             foreach (var edge in graph.Edges)
                 Write(edge);
 
