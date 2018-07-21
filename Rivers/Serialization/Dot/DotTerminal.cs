@@ -5,6 +5,7 @@
         Strict,
         Graph,
         DiGraph,
+        SubGraph,
         OpenBrace,
         CloseBrace,
         SemiColon,

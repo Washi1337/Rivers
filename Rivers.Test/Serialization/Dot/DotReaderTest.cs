@@ -212,5 +212,89 @@ B -> C [color=green, style=dashed]
                 NodeComparer = new NodeComparer() {IncludeUserData = true}
             });
         }
+
+        [Fact]
+        public void ShortSubGraph()
+        {
+            var g = new Graph();
+            g.Nodes.Add("A");
+            g.Nodes.Add("B");
+            g.Nodes.Add("C");
+            g.Nodes.Add("D");
+
+            g.Edges.Add("A", "B");
+            g.Edges.Add("C", "D");
+            
+            var reader = new StringReader(
+                @"strict digraph { 
+
+{ A -> B }
+
+C -> D
+
+}");
+            var dotReader = new DotReader(reader);
+            var h = dotReader.Read();
+            Assert.Equal(g, h, new GraphComparer()
+            {
+                NodeComparer = new NodeComparer() {IncludeUserData = true}
+            });
+        }
+
+        [Fact]
+        public void AnonymousSubGraph()
+        {
+            var g = new Graph();
+            g.Nodes.Add("A");
+            g.Nodes.Add("B");
+            g.Nodes.Add("C");
+            g.Nodes.Add("D");
+
+            g.Edges.Add("A", "B");
+            g.Edges.Add("C", "D");
+            
+            var reader = new StringReader(
+                @"strict digraph { 
+
+subgraph { A -> B }
+
+C -> D
+
+}");
+            var dotReader = new DotReader(reader);
+            var h = dotReader.Read();
+            Assert.Equal(g, h, new GraphComparer()
+            {
+                NodeComparer = new NodeComparer() {IncludeUserData = true}
+            });
+        }
+        
+        [Fact]
+        public void NamedSubGraph()
+        {
+            var g = new Graph();
+            g.Nodes.Add("A");
+            g.Nodes.Add("B");
+            g.Nodes.Add("C");
+            g.Nodes.Add("D");
+
+            g.Edges.Add("A", "B");
+            g.Edges.Add("C", "D");
+            
+            var reader = new StringReader(
+                @"strict digraph { 
+
+subgraph H { A -> B }
+
+C -> D
+
+}");
+            var dotReader = new DotReader(reader);
+            var h = dotReader.Read();
+            Assert.Equal(g, h, new GraphComparer()
+            {
+                NodeComparer = new NodeComparer() {IncludeUserData = true}
+            });
+        }
     }
 }

@@ -15,6 +15,7 @@ namespace Rivers.Serialization.Dot
             ["strict"] = DotTerminal.Strict,
             ["graph"] = DotTerminal.Graph,
             ["digraph"] = DotTerminal.DiGraph,
+            ["subgraph"] = DotTerminal.SubGraph,
         };
         
         private readonly TextReader _reader;

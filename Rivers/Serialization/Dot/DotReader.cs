@@ -13,7 +13,7 @@ namespace Rivers.Serialization.Dot
         // https://www.graphviz.org/doc/info/lang.html
         
         private readonly DotTokenizer _tokenizer;
-        private Graph _graph;
+        private readonly Stack<Graph> _graphs = new Stack<Graph>();
 
         public DotReader(TextReader reader)
         {
@@ -24,6 +24,14 @@ namespace Rivers.Serialization.Dot
         }
 
         /// <summary>
+        /// Refers to the current (sub) graph to add nodes and edges to.
+        /// </summary>
+        private Graph CurrentGraph
+        {
+            get { return _graphs.Peek(); }
+        }
+        
+        /// <summary>
         /// Reads the graph from the input stream. 
         /// </summary>
         /// <returns>The read graph</returns>
@@ -32,7 +40,7 @@ namespace Rivers.Serialization.Dot
         {
             if (_tokenizer.Peek().Terminal == DotTerminal.Strict)
             {
-                // Ignore.
+                // Ignore.    
                 _tokenizer.Next();
             }
 
@@ -48,13 +56,13 @@ namespace Rivers.Serialization.Dot
                     break;
             }
 
-            _graph = new Graph(directed);
+            _graphs.Push(new Graph(directed));
 
             ExpectOneOf(DotTerminal.OpenBrace);
             ReadStatementList();
             ExpectOneOf(DotTerminal.CloseBrace);
-            
-            return _graph;
+
+            return _graphs.Pop();
         }
 
         /// <summary>
@@ -66,15 +74,45 @@ namespace Rivers.Serialization.Dot
 
             while (true)
             {
-                var next = TryExpectOneOf(DotTerminal.Identifier);
-                if (next == null)
-                    break;
+                var next = TryExpectOneOf(DotTerminal.SubGraph, DotTerminal.OpenBrace);
+                if (next != null)
+                {
+                    ReadSubGraph(next.Value);
+                }
+                else
+                {
+                    next = TryExpectOneOf(DotTerminal.Identifier);
+                    if (next == null)
+                        break;
 
-                if (!TryReadEdgeStatement(next.Value.Text))
-                    ReadNodeStatement(next.Value.Text);
-
+                    if (!TryReadEdgeStatement(next.Value.Text))
+                        ReadNodeStatement(next.Value.Text);
+                }
+                 
                 TryExpectOneOf(DotTerminal.SemiColon);
             }   
+        }
+
+        /// <summary>
+        /// Parses the subgraph grammar rule. This function assumes the first token indicating the subgraph is alread consumed.
+        /// </summary>
+        /// <param name="start">The starting token identifying the subgraph.</param>
+        private void ReadSubGraph(DotToken start)
+        {
+            if (start.Terminal == DotTerminal.SubGraph)
+            {
+                var next = ExpectOneOf(DotTerminal.Identifier, DotTerminal.OpenBrace);
+                if (next.Terminal == DotTerminal.Identifier)
+                    ExpectOneOf(DotTerminal.OpenBrace);
+            }
+
+            _graphs.Push(new Graph());
+            ReadStatementList();
+            var subGraph = _graphs.Pop();
+
+            CurrentGraph.DisjointUnionWith(subGraph, string.Empty, true);
+            
+            ExpectOneOf(DotTerminal.CloseBrace);
         }
 
         /// <summary>
@@ -83,7 +121,7 @@ namespace Rivers.Serialization.Dot
         /// <param name="name">The node name.</param>
         private void ReadNodeStatement(string name)
         {
-            var node = _graph.Nodes.Add(name);
+            var node = CurrentGraph.Nodes.Add(name);
 
             var attributes = TryReadAttributeList();
             if (attributes != null)
@@ -101,17 +139,17 @@ namespace Rivers.Serialization.Dot
         /// <returns>True if it succeeded, false otherwise.</returns>
         private bool TryReadEdgeStatement(string sourceName)
         {
-            var edgeOp = TryExpectOneOf(_graph.IsDirected ? DotTerminal.DirectedEdge : DotTerminal.UndirectedEdge);
+            var edgeOp = TryExpectOneOf(CurrentGraph.IsDirected ? DotTerminal.DirectedEdge : DotTerminal.UndirectedEdge);
             if (edgeOp == null)
                 return false;
             
-            var startNode = _graph.Nodes.Add(sourceName);
+            var startNode = CurrentGraph.Nodes.Add(sourceName);
 
             var target = ExpectOneOf(DotTerminal.Identifier);
-            var targetNode = _graph.Nodes.Add(target.Text);
+            var targetNode = CurrentGraph.Nodes.Add(target.Text);
             
             var edge = new Edge(startNode, targetNode);
-            _graph.Edges.Add(edge);
+            CurrentGraph.Edges.Add(edge);
 
             var attributes = TryReadAttributeList();
             if (attributes != null)
