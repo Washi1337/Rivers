@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 
 namespace Rivers.Serialization.Dot
 {
@@ -74,30 +75,49 @@ namespace Rivers.Serialization.Dot
 
             while (true)
             {
-                var next = TryExpectOneOf(DotTerminal.SubGraph, DotTerminal.OpenBrace);
-                if (next != null)
-                {
-                    ReadSubGraph(next.Value);
-                }
-                else
-                {
-                    next = TryExpectOneOf(DotTerminal.Identifier);
-                    if (next == null)
-                        break;
-
-                    if (!TryReadEdgeStatement(next.Value.Text))
-                        ReadNodeStatement(next.Value.Text);
-                }
-                 
+                var nodes = ReadNextNodes(false);
+                if (nodes.Count == 0)
+                    break;
+                TryReadEdgeRhs(nodes);
+                
                 TryExpectOneOf(DotTerminal.SemiColon);
             }   
+        }
+
+        private ICollection<Node> ReadNextNodes(bool edgeRhs)
+        {
+            var nodes = new HashSet<Node>();
+
+            var next = TryExpectOneOf(DotTerminal.SubGraph, DotTerminal.OpenBrace, DotTerminal.Identifier);
+
+            if (next != null)
+            {
+                switch (next.Value.Terminal)
+                {
+                    case DotTerminal.SubGraph:
+                    case DotTerminal.OpenBrace:
+                        var subGraph = ReadSubGraph(next.Value);
+                        CurrentGraph.DisjointUnionWith(subGraph, string.Empty, true);
+                        nodes.UnionWith(subGraph.Nodes.Select(x => CurrentGraph.Nodes[x.Name]));
+                        break;
+                    case DotTerminal.Identifier:
+                        nodes.Add(edgeRhs 
+                            ? CurrentGraph.Nodes.Add(next.Value.Text) // In EdgeRHS rule, the target nodes can only consist of names.
+                            : ReadNodeStatement(next.Value.Text)); // Otherwise, it can also contain extra attributes.
+                        break;
+                }
+                
+                TryExpectOneOf(DotTerminal.SemiColon);
+            }
+
+            return nodes;
         }
 
         /// <summary>
         /// Parses the subgraph grammar rule. This function assumes the first token indicating the subgraph is alread consumed.
         /// </summary>
         /// <param name="start">The starting token identifying the subgraph.</param>
-        private void ReadSubGraph(DotToken start)
+        private Graph ReadSubGraph(DotToken start)
         {
             if (start.Terminal == DotTerminal.SubGraph)
             {
@@ -106,20 +126,18 @@ namespace Rivers.Serialization.Dot
                     ExpectOneOf(DotTerminal.OpenBrace);
             }
 
-            _graphs.Push(new Graph());
+            _graphs.Push(new Graph(CurrentGraph.IsDirected));
             ReadStatementList();
-            var subGraph = _graphs.Pop();
-
-            CurrentGraph.DisjointUnionWith(subGraph, string.Empty, true);
-            
             ExpectOneOf(DotTerminal.CloseBrace);
+
+            return _graphs.Pop();
         }
 
         /// <summary>
         /// Parses the node_stmt grammar rule. This function assumes the actual node token is already consumed.
         /// </summary>
         /// <param name="name">The node name.</param>
-        private void ReadNodeStatement(string name)
+        private Node ReadNodeStatement(string name)
         {
             var node = CurrentGraph.Nodes.Add(name);
 
@@ -129,38 +147,43 @@ namespace Rivers.Serialization.Dot
                 foreach (var entry in attributes)
                     node.UserData[entry.Key] = entry.Value;
             }
+
+            return node;
         }
 
         /// <summary>
-        /// Attempts to parse the edge_stmt grammar rule. This function assumes the token containing the name of the
-        /// source node is already consumed.
+        /// Attempts to parse the edge_rhs grammar rule. This function assumes the tokens representing the source nodes
+        /// are already consumed.
         /// </summary>
-        /// <param name="sourceName">The name of the source node.</param>
+        /// <param name="sourceNodes">The source nodes to draw edges from.</param>
         /// <returns>True if it succeeded, false otherwise.</returns>
-        private bool TryReadEdgeStatement(string sourceName)
+        private void TryReadEdgeRhs(ICollection<Node> sourceNodes)
         {
-            var edgeOp = TryExpectOneOf(CurrentGraph.IsDirected ? DotTerminal.DirectedEdge : DotTerminal.UndirectedEdge);
-            if (edgeOp == null)
-                return false;
-            
-            var startNode = CurrentGraph.Nodes.Add(sourceName);
-
-            var target = ExpectOneOf(DotTerminal.Identifier);
-            var targetNode = CurrentGraph.Nodes.Add(target.Text);
-            
-            var edge = new Edge(startNode, targetNode);
-            CurrentGraph.Edges.Add(edge);
-
-            var attributes = TryReadAttributeList();
-            if (attributes != null)
+            var edgeOpTerminal = CurrentGraph.IsDirected ? DotTerminal.DirectedEdge : DotTerminal.UndirectedEdge;
+            while ((TryExpectOneOf(edgeOpTerminal)).HasValue)
             {
-                foreach (var entry in attributes)
-                    edge.UserData[entry.Key] = entry.Value;
+                var targets = ReadNextNodes(true);
+
+                foreach (var target in targets)
+                {
+                    var attributes = TryReadAttributeList();
+
+                    foreach (var sourceNode in sourceNodes)
+                    {
+                        var edge = new Edge(sourceNode, target);
+                        CurrentGraph.Edges.Add(edge);
+                        if (attributes != null)
+                        {
+                            foreach (var entry in attributes)
+                                edge.UserData[entry.Key] = entry.Value;
+                        }
+                    }
+                }
+
+                sourceNodes = targets;
             }
-
-            return true;
         }
-
+        
         /// <summary>
         /// Attempts to parse the attr_list grammar rule.
         /// </summary>

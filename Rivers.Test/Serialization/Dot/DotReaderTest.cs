@@ -242,6 +242,31 @@ C -> D
         }
 
         [Fact]
+        public void NodeChain()
+        {
+            var g = new Graph();
+            g.Nodes.Add("A");
+            g.Nodes.Add("B");
+            g.Nodes.Add("C");
+
+            g.Edges.Add("A", "B");
+            g.Edges.Add("B", "C");
+            
+            var reader = new StringReader(
+                @"strict digraph { 
+
+A -> B -> C
+
+}");
+            var dotReader = new DotReader(reader);
+            var h = dotReader.Read();
+            Assert.Equal(g, h, new GraphComparer()
+            {
+                NodeComparer = new NodeComparer() {IncludeUserData = true}
+            });
+        }
+
+        [Fact]
         public void AnonymousSubGraph()
         {
             var g = new Graph();
@@ -287,6 +312,88 @@ C -> D
 subgraph H { A -> B }
 
 C -> D
+
+}");
+            var dotReader = new DotReader(reader);
+            var h = dotReader.Read();
+            Assert.Equal(g, h, new GraphComparer()
+            {
+                NodeComparer = new NodeComparer() {IncludeUserData = true}
+            });
+        }
+
+        [Fact]
+        public void NodeToSubGraph()
+        {
+            var g = new Graph();
+            g.Nodes.Add("A");
+            g.Nodes.Add("B");
+            g.Nodes.Add("C");
+
+            g.Edges.Add("A", "B");
+            g.Edges.Add("A", "C");
+            g.Edges.Add("B", "C");
+            
+            var reader = new StringReader(
+                @"strict digraph { 
+
+A -> { B -> C }
+
+}");
+            var dotReader = new DotReader(reader);
+            var h = dotReader.Read();
+            Assert.Equal(g, h, new GraphComparer()
+            {
+                NodeComparer = new NodeComparer() {IncludeUserData = true}
+            });
+        }
+
+        [Fact]
+        public void SubGraphToNode()
+        {
+            var g = new Graph();
+            g.Nodes.Add("A");
+            g.Nodes.Add("B");
+            g.Nodes.Add("C");
+
+            g.Edges.Add("B", "C");
+            g.Edges.Add("B", "A");
+            g.Edges.Add("C", "A");
+            
+            var reader = new StringReader(
+                @"strict digraph { 
+
+{ B -> C } -> A
+
+}");
+            var dotReader = new DotReader(reader);
+            var h = dotReader.Read();
+            Assert.Equal(g, h, new GraphComparer()
+            {
+                NodeComparer = new NodeComparer() {IncludeUserData = true}
+            });
+        }
+
+        [Fact]
+        public void SubGraphToSubGraph()
+        {
+            var g = new Graph();
+            g.Nodes.Add("A");
+            g.Nodes.Add("B");
+            g.Nodes.Add("C");
+            g.Nodes.Add("D");
+
+            g.Edges.Add("A", "B");
+            g.Edges.Add("A", "C");
+            g.Edges.Add("A", "D");
+            g.Edges.Add("B", "C");
+            g.Edges.Add("B", "D");
+            g.Edges.Add("C", "D");
+            
+            var reader = new StringReader(
+                @"strict digraph { 
+
+{ A -> B } -> { C -> D } 
 
 }");
             var dotReader = new DotReader(reader);
