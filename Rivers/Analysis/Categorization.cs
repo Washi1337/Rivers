@@ -9,7 +9,7 @@ namespace Rivers.Analysis
         /// <summary>
         /// Determines whether a graph contains at least one cycle.
         /// </summary>
-        /// <param name="graph">The graph to check.</param>
+        /// <param name="graph">The graph to test.</param>
         /// <returns>True if the graph is cyclic, false otherwise.</returns>
         public static bool IsCyclic(this Graph graph)
         {
@@ -36,19 +36,23 @@ namespace Rivers.Analysis
         /// Determines whether a graph is connected. That is, every vertex is reachable from any other vertex.
         /// For directed graphs this method verifies whether the graph is weakly connected.
         /// </summary>
-        /// <param name="graph">The graph to check.</param>
+        /// <param name="graph">The graph to test.</param>
         /// <returns>True if the graph is (weakly) connected, false otherwise.</returns>
         public static bool IsConnected(this Graph graph)
         {
+            if (graph.Nodes.Count <= 1)
+                return true;
+            
             if (graph.IsDirected)
                 graph = graph.ToUndirected();
+            
             return graph.Nodes.First().BreadthFirstTraversal().Count() == graph.Nodes.Count;
         }
         
         /// <summary>
-        /// Determines whether a graph is a tree.
+        /// Determines whether a graph is a tree. That is, a (weakly) connected acyclic graph.
         /// </summary>
-        /// <param name="graph">The graph to check.</param>
+        /// <param name="graph">The graph to test.</param>
         /// <returns>True if the graph is a tree, false otherwise.</returns>
         public static bool IsTree(this Graph graph)
         {
@@ -66,5 +70,38 @@ namespace Rivers.Analysis
             return count == graph.Nodes.Count;
         }
 
+        /// <summary>
+        /// Determines whether a graph is regular. That is, every node in the graph has the same degree.
+        /// </summary>
+        /// <param name="graph">The graph to test.</param>
+        /// <returns>True if the graph is regular, false otherwise.</returns>
+        public static bool IsRegular(this Graph graph)
+        {
+            if (graph.Nodes.Count <= 1)
+                return true;
+            var firstNode = graph.Nodes.First();
+            return graph.Nodes.All(n => n.InDegree == firstNode.InDegree && n.OutDegree == firstNode.OutDegree);
+        }
+
+        /// <summary>
+        /// Determines whether a graph is complete. That is, every node in the graph is connected to every other
+        /// node in the graph.
+        /// </summary>
+        /// <param name="graph">The graph to test.</param>
+        /// <returns>True if the graph is complete, false otherwise.</returns>
+        public static bool IsComplete(this Graph graph)
+        {
+            foreach (var n1 in graph.Nodes)
+            {
+                if (graph.Nodes
+                    .Where(x => x != n1)
+                    .Any(n2 => !n1.OutgoingEdges.Contains(n2) || !n2.OutgoingEdges.Contains(n1)))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 }

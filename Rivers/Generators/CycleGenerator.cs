@@ -23,7 +23,7 @@ namespace Rivers.Generators
         }
 
         /// <summary>
-        /// Gets a value indicating whether the generated graphs will be directed or not.
+        /// Gets a value indicating whether the generator should generate directed or undirected graphs. 
         /// </summary>
         public bool Directed
         {

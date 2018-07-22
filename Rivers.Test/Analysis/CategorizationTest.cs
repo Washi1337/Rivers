@@ -1,4 +1,8 @@
-﻿using Rivers.Analysis;
+﻿using System;
+using System.IO;
+using Rivers.Analysis;
+using Rivers.Generators;
+using Rivers.Serialization.Dot;
 using Xunit;
 
 namespace Rivers.Test.Analysis
@@ -167,7 +171,32 @@ namespace Rivers.Test.Analysis
             
             Assert.True(g.IsTree());
         }
-        
-        
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void RegularGraph(bool directed)
+        {
+            var g = new Graph(directed);
+            g.Nodes.Add("1");
+            g.Nodes.Add("2");
+            g.Nodes.Add("3");
+
+            g.Edges.Add("1", "2");
+            g.Edges.Add("2", "3");
+            g.Edges.Add("3", "1");
+            
+            Assert.True(g.IsRegular());
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void CompleteGraph(bool directed)
+        {
+            var generator = new CompleteGraphGenerator(directed, 10);
+            var g = generator.GenerateGraph();
+            Assert.True(g.IsComplete());
+        }
     }
 }
