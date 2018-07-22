@@ -19,6 +19,31 @@ namespace Rivers.Collections
             get;
         }
 
+        /// <summary>
+        /// Gets an edge by its source and target node.
+        /// </summary>
+        /// <param name="source">The name of the source node.</param>
+        /// <param name="target">The name of the target node.</param>
+        /// <exception cref="KeyNotFoundException">Occurs when the edge does not exist in the graph.</exception>
+        public Edge this[string source, string target] =>
+            this[ParentGraph.Nodes[source], ParentGraph.Nodes[target]];
+        
+        /// <summary>
+        /// Gets an edge by its source and target node.
+        /// </summary>
+        /// <param name="source">The source node.</param>
+        /// <param name="target">The target node.</param>
+        /// <exception cref="KeyNotFoundException">Occurs when the edge does not exist in the graph.</exception>
+        public Edge this[Node source, Node target]
+        {
+            get
+            {
+                if (!TryGetEdge(source, target, out var edge))
+                    throw new KeyNotFoundException();
+                return edge;
+            }
+        }
+
         /// <inheritdoc />
         public abstract int Count { get; }
 
@@ -30,12 +55,16 @@ namespace Rivers.Collections
             if (ParentGraph.Nodes.TryGetNode(sourceName, out var sourceNode)
                 && ParentGraph.Nodes.TryGetNode(targetName, out var targetNode))
             {
-                if (sourceNode.OutgoingEdges.TryGetEdge(targetName, out edge))
-                    return true;
+                return TryGetEdge(sourceNode, targetNode, out edge);
             }
             
             edge = null;
             return false;
+        }
+        
+        public virtual bool TryGetEdge(Node sourceNode, Node targetNode, out Edge edge)
+        {
+            return sourceNode.OutgoingEdges.TryGetEdge(targetNode, out edge);
         }
 
         /// <summary>
