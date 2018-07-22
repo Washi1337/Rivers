@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Analysis\CategorizationTest.cs" />
+    <Compile Include="Analysis\PathFinding\DijkstraTest.cs" />
     <Compile Include="DirectedAdjacencyCollectionTest.cs" />
     <Compile Include="Analysis\DominatorInfoTest.cs" />
     <Compile Include="Analysis\SearchTest.cs" />

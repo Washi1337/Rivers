@@ -40,6 +40,9 @@
   <ItemGroup>
     <Compile Include="Analysis\Categorization.cs" />
     <Compile Include="Analysis\DominatorInfo.cs" />
+    <Compile Include="Analysis\PathFinding\DijkstraPathFinder.cs" />
+    <Compile Include="Analysis\PathFinding\DistanceTable.cs" />
+    <Compile Include="Analysis\PathFinding\IPathFinder.cs" />
     <Compile Include="Analysis\Search.cs" />
     <Compile Include="Collections\AdjacencyCollection.cs" />
     <Compile Include="Collections\DirectedAdjacencyCollection.cs" />
