@@ -38,6 +38,12 @@ namespace Rivers.Serialization.Dot
             get;
             set;
         } = true;
+
+        public bool IncludeSemicolons
+        {
+            get;
+            set;
+        } = true;
         
         /// <summary>
         /// Writes a graph to the character stream.
@@ -48,7 +54,11 @@ namespace Rivers.Serialization.Dot
             WriteHeader(graph.IsDirected);
 
             if (graph.UserData.Count > 0)
-                WriteSeparatedString(graph.UserData, Environment.NewLine);
+            {
+                WriteSeparatedString(graph.UserData, (IncludeSemicolons ? ";" : string.Empty) + Environment.NewLine);
+                WriteSemicolon();
+                _writer.WriteLine();
+            }
 
             foreach (var node in graph.Nodes)
             {
@@ -87,6 +97,8 @@ namespace Rivers.Serialization.Dot
                 _writer.Write(']');
             }
 
+            WriteSemicolon();
+
             _writer.WriteLine();
         }
 
@@ -103,7 +115,24 @@ namespace Rivers.Serialization.Dot
                 _writer.Write(']');
             }
             
+            WriteSemicolon();
+            
             _writer.WriteLine();
+        }
+
+        private void WriteIdentifier(string text)
+        {
+            if (!NeedsEscaping(text))
+            {
+                _writer.Write(text);
+            }
+            else
+            {
+                _writer.Write('"');
+                foreach (var c in text)
+                    WriteEscapedCharacter(c);
+                _writer.Write('"');
+            }
         }
 
         private void WriteSeparatedString(ICollection<KeyValuePair<object, object>> objects, string separator)
@@ -120,19 +149,10 @@ namespace Rivers.Serialization.Dot
             }   
         }
 
-        private void WriteIdentifier(string text)
+        private void WriteSemicolon()
         {
-            if (!NeedsEscaping(text))
-            {
-                _writer.Write(text);
-            }
-            else
-            {
-                _writer.Write('"');
-                foreach (var c in text)
-                    WriteEscapedCharacter(c);
-                _writer.Write('"');
-            }
+            if (IncludeSemicolons)
+                _writer.Write(';');
         }
 
         private static bool NeedsEscaping(string text)
