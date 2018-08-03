@@ -14,9 +14,9 @@ namespace Rivers.Analysis.PathFinding
         /// <summary>
         /// Creates a new instance of the Dijkstra's path finder.
         /// </summary>
-        /// <param name="distanceProperptyName">The name of the attribute in <see cref="Edge.UserData"/> to use as the distance.</param>
-        public DijkstraPathFinder(string distanceProperptyName)
-            : this(e => Convert.ToDouble(e.UserData[distanceProperptyName])) 
+        /// <param name="distancePropertyName">The name of the attribute in <see cref="Edge.UserData"/> to use as the distance.</param>
+        public DijkstraPathFinder(string distancePropertyName)
+            : this(e => Convert.ToDouble(e.UserData[distancePropertyName])) 
         {
         }
 
