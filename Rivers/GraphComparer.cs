@@ -8,6 +8,13 @@ namespace Rivers
         {
             NodeComparer = new NodeComparer();
             EdgeComparer = new EdgeComparer();
+            IncludeUserData = false;
+        }
+
+        public bool IncludeUserData
+        {
+            get;
+            set;
         }
         
         public IEqualityComparer<Node> NodeComparer
@@ -50,6 +57,18 @@ namespace Rivers
                     || !EdgeComparer.Equals(e1, e2))
                 {
                     return false;
+                }
+            }
+
+            if (IncludeUserData)
+            {
+                if (x.UserData.Count != y.UserData.Count)
+                    return false;
+                
+                foreach (var entry in x.UserData)
+                {
+                    if (!y.UserData.TryGetValue(entry.Key, out var value) || !Equals(entry.Value, value))
+                        return false;
                 }
             }
 

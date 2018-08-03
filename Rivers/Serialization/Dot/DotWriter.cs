@@ -47,6 +47,9 @@ namespace Rivers.Serialization.Dot
         {
             WriteHeader(graph.IsDirected);
 
+            if (graph.UserData.Count > 0)
+                WriteSeparatedString(graph.UserData, Environment.NewLine);
+
             foreach (var node in graph.Nodes)
             {
                 if (SeparateNodesAndEdges
@@ -80,7 +83,7 @@ namespace Rivers.Serialization.Dot
             if (node.UserData.Count > 0)
             {
                 _writer.Write(" [");
-                WriteCommaSeparatedString(node.UserData);
+                WriteSeparatedString(node.UserData, ", ");
                 _writer.Write(']');
             }
 
@@ -96,14 +99,14 @@ namespace Rivers.Serialization.Dot
             if (edge.UserData.Count > 0)
             {
                 _writer.Write(" [");
-                WriteCommaSeparatedString(edge.UserData);
+                WriteSeparatedString(edge.UserData, ", ");
                 _writer.Write(']');
             }
             
             _writer.WriteLine();
         }
 
-        private void WriteCommaSeparatedString(ICollection<KeyValuePair<object, object>> objects)
+        private void WriteSeparatedString(ICollection<KeyValuePair<object, object>> objects, string separator)
         {
             int c = 0;
             foreach (var entry in objects)
@@ -112,7 +115,7 @@ namespace Rivers.Serialization.Dot
                 _writer.Write('=');
                 WriteIdentifier(entry.Value.ToString());
                 if (c < objects.Count - 1)
-                    _writer.Write(", ");
+                    _writer.Write(separator);
                 c++;
             }   
         }

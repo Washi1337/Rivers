@@ -47,7 +47,6 @@ namespace Rivers.Serialization.Dot
         /// Reads the graph from the input stream. 
         /// </summary>
         /// <returns>The read graph</returns>
-        /// <exception cref="NotSupportedException">Occurs when the dot file contains an undirected graph.</exception>
         public Graph Read()
         {
             if (_tokenizer.Peek().Terminal == DotTerminal.Strict)
@@ -82,26 +81,62 @@ namespace Rivers.Serialization.Dot
         /// </summary>
         private void ReadStatementList()
         {
-            // TODO: add support for attr_stmt and subgraph.
-
-            while (true)
-            {
-                var nodes = ReadNextNodes(false);
-                if (nodes.Count == 0)
-                    break;
-                TryReadEdgeRhs(nodes);
-                
-                TryExpectOneOf(DotTerminal.SemiColon);
-            }   
+            // TODO: add support for attr_stmt.
+            while (TryReadStatement()) ;
         }
 
+        /// <summary>
+        /// Attempts to parse the stmt grammar rule.
+        /// </summary>
+        /// <returns>True if it succeeded parsing the stmt rule, false otherwise.</returns>
+        private bool TryReadStatement()
+        {
+            bool result = false;
+            
+            var next = TryExpectOneOf(DotTerminal.Identifier);
+            
+            if (next.HasValue)
+            {
+                // Try ID = ID rule.
+                var idToken = next.Value;
+                next = TryExpectOneOf(DotTerminal.Equal);
+                if (next.HasValue)
+                {
+                    var value = ExpectOneOf(DotTerminal.Identifier);
+                    CurrentGraph.UserData[idToken.Text] = value.Text;
+                }
+                else
+                {
+                    // Fall back to normal node statement.
+                    var node = ReadNodeStatement(idToken.Text);
+                    TryReadEdgeRhs(new[] {node});
+                }
+
+                result = true;
+            }
+            else
+            {
+                // Fall back to normal node statement.
+                var nodes = ReadNextNodes(false);
+                result = nodes.Count > 0;
+                if (result)
+                    TryReadEdgeRhs(nodes);
+            }
+            
+            next = TryExpectOneOf(DotTerminal.SemiColon);
+            if (next.HasValue)
+                result = true;
+
+            return result;
+        }
+        
         private ICollection<Node> ReadNextNodes(bool edgeRhs)
         {
             var nodes = new HashSet<Node>();
 
             var next = TryExpectOneOf(DotTerminal.SubGraph, DotTerminal.OpenBrace, DotTerminal.Identifier);
 
-            if (next != null)
+            if (next.HasValue)
             {
                 switch (next.Value.Terminal)
                 {

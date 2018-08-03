@@ -130,7 +130,9 @@ namespace Rivers.Serialization.Dot
         private char ReadCharacter()
         {
             char c = (char) _reader.Read();
-            _currentLocation = _currentLocation.Offset(0, 1);
+            _currentLocation = c == '\n'
+                ? _currentLocation = new TextLocation(_currentLocation.Line + 1, 1)
+                : _currentLocation.Offset(0, 1);
             return c;
         }
 

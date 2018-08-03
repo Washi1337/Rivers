@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
 using Rivers.Collections;
@@ -24,11 +26,19 @@ namespace Rivers
                 Edges = new DirectedEdgeCollection(this);
             else
                 Edges = new UndirectedEdgeCollection(this);
+            
+            UserData = new Dictionary<object, object>();
         }
 
         public bool IsDirected
         {
             get;
+        }
+
+        public string Name
+        {
+            get;
+            set;
         }
 
         /// <summary>
@@ -43,6 +53,11 @@ namespace Rivers
         /// Gets a collection of edges present in the graph.
         /// </summary>
         public EdgeCollection Edges
+        {
+            get;
+        }
+
+        public IDictionary<object, object> UserData
         {
             get;
         }

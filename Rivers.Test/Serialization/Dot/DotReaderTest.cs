@@ -403,5 +403,36 @@ A -> { B -> C }
                 NodeComparer = new NodeComparer() {IncludeUserData = true}
             });
         }
+
+        [Fact]
+        public void GraphAttributes()
+        {
+            var g = new Graph();
+            g.Nodes.Add("A");
+            g.Nodes.Add("B");
+            g.Nodes.Add("C");
+
+            g.Edges.Add("A", "B");
+            g.Edges.Add("B", "C");
+            g.Edges.Add("C", "A");
+
+            g.UserData["color"] = "blue";
+            g.UserData["label"] = "Test";
+            
+            var reader = new StringReader(
+                @"strict digraph {
+color=blue
+A -> B -> C -> A
+label=Test
+}");
+            
+            var dotReader = new DotReader(reader);
+            var h = dotReader.Read();
+            Assert.Equal(g, h, new GraphComparer()
+            {
+                IncludeUserData = true
+            });
+
+        }
     }
 }

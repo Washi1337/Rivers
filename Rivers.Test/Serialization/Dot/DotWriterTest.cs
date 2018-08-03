@@ -18,7 +18,10 @@ namespace Rivers.Test.Serialization.Dot
             var dotReader = new DotReader(reader);
             var h = dotReader.Read();
 
-            Assert.Equal(g, h, new GraphComparer());
+            Assert.Equal(g, h, new GraphComparer
+            {
+                IncludeUserData = true
+            });
         }
         
         [Fact]
@@ -124,6 +127,22 @@ namespace Rivers.Test.Serialization.Dot
             g.Nodes["B"].OutgoingEdges["C"].UserData["style"] = "dashed";
 
             Validate(g, separate);
+        }
+
+        public void GraphAttributes()
+        {
+            var g = new Graph();
+            g.Nodes.Add("A");
+            g.Nodes.Add("B");
+            g.Nodes.Add("C");
+
+            g.Edges.Add("A", "B");
+            g.Edges.Add("B", "C");
+            g.Edges.Add("C", "A");
+            
+            g.UserData["label"] = "Test";
+
+            Validate(g, false);
         }
     }
 }
