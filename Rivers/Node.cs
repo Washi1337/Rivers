@@ -18,6 +18,7 @@ namespace Rivers
             IncomingEdges = new EmptyAdjacencyCollection(this);
             OutgoingEdges = new EmptyAdjacencyCollection(this);
             UserData = new Dictionary<object, object>();
+            SubGraphs = new List<SubGraph>();
         }
 
         /// <summary>
@@ -76,6 +77,14 @@ namespace Rivers
         /// Gets a grouped collection of user data associated to the node.
         /// </summary>
         public IDictionary<object, object> UserData
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Gets a collection of sub graphs the node belongs to.
+        /// </summary>
+        public ICollection<SubGraph> SubGraphs
         {
             get;
         }

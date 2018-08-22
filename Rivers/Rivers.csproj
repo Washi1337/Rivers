@@ -45,6 +45,8 @@
     <Compile Include="Analysis\PathFinding\DistanceTable.cs" />
     <Compile Include="Analysis\PathFinding\IPathFinder.cs" />
     <Compile Include="Analysis\Search.cs" />
+    <Compile Include="Collections\SubGraphNodeCollection.cs" />
+    <Compile Include="SubGraph.cs" />
     <Compile Include="Collections\AdjacencyCollection.cs" />
     <Compile Include="Collections\DirectedAdjacencyCollection.cs" />
     <Compile Include="Collections\DirectedEdgeCollection.cs" />

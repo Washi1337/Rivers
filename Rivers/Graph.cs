@@ -27,14 +27,21 @@ namespace Rivers
             else
                 Edges = new UndirectedEdgeCollection(this);
             
+            SubGraphs = new List<SubGraph>();
             UserData = new Dictionary<object, object>();
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the graph is directed or not.
+        /// </summary>
         public bool IsDirected
         {
             get;
         }
 
+        /// <summary>
+        /// Gets or sets the name of the graph, if available.
+        /// </summary>
         public string Name
         {
             get;
@@ -53,6 +60,14 @@ namespace Rivers
         /// Gets a collection of edges present in the graph.
         /// </summary>
         public EdgeCollection Edges
+        {
+            get;
+        }
+        
+        /// <summary>
+        /// Gets a collection of sub graphs defined in the graph.
+        /// </summary>
+        public ICollection<SubGraph> SubGraphs
         {
             get;
         }
