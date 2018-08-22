@@ -27,7 +27,7 @@ namespace Rivers
             else
                 Edges = new UndirectedEdgeCollection(this);
             
-            SubGraphs = new List<SubGraph>();
+            SubGraphs = new SubGraphCollection(this);
             UserData = new Dictionary<object, object>();
         }
 
@@ -67,7 +67,7 @@ namespace Rivers
         /// <summary>
         /// Gets a collection of sub graphs defined in the graph.
         /// </summary>
-        public ICollection<SubGraph> SubGraphs
+        public SubGraphCollection SubGraphs
         {
             get;
         }

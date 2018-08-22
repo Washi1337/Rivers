@@ -18,7 +18,7 @@ namespace Rivers
             IncomingEdges = new EmptyAdjacencyCollection(this);
             OutgoingEdges = new EmptyAdjacencyCollection(this);
             UserData = new Dictionary<object, object>();
-            SubGraphs = new List<SubGraph>();
+            SubGraphs = new NodeSubGraphCollection(this);
         }
 
         /// <summary>

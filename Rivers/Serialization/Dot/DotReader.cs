@@ -142,9 +142,14 @@ namespace Rivers.Serialization.Dot
                 {
                     case DotTerminal.SubGraph:
                     case DotTerminal.OpenBrace:
-                        var subGraph = ReadSubGraph(next.Value);
-                        CurrentGraph.DisjointUnionWith(subGraph, string.Empty, true);
-                        nodes.UnionWith(subGraph.Nodes.Select(x => CurrentGraph.Nodes[x.Name]));
+                        var tempGraph = ReadSubGraph(next.Value);
+                        CurrentGraph.DisjointUnionWith(tempGraph, string.Empty, true);
+                        var subGraph = new SubGraph(tempGraph.Name,
+                            tempGraph.Nodes.Select(x => CurrentGraph.Nodes[x.Name]).ToArray());
+                        foreach (var entry in tempGraph.UserData)
+                            subGraph.UserData.Add(entry.Key, entry.Value);    
+                        CurrentGraph.SubGraphs.Add(subGraph);
+                        nodes.UnionWith(subGraph.Nodes);
                         break;
                     case DotTerminal.Identifier:
                         nodes.Add(edgeRhs 
@@ -165,14 +170,19 @@ namespace Rivers.Serialization.Dot
         /// <param name="start">The starting token identifying the subgraph.</param>
         private Graph ReadSubGraph(DotToken start)
         {
+            string name = null;
+            
             if (start.Terminal == DotTerminal.SubGraph)
             {
                 var next = ExpectOneOf(DotTerminal.Identifier, DotTerminal.OpenBrace);
                 if (next.Terminal == DotTerminal.Identifier)
+                {
+                    name = next.Text;
                     ExpectOneOf(DotTerminal.OpenBrace);
+                }
             }
 
-            _graphs.Push(new Graph(CurrentGraph.IsDirected));
+            _graphs.Push(new Graph(CurrentGraph.IsDirected) { Name = name });
             ReadStatementList();
             ExpectOneOf(DotTerminal.CloseBrace);
 

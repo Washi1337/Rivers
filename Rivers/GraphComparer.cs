@@ -1,33 +1,33 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Rivers
 {
     public class GraphComparer : IEqualityComparer<Graph>
     {
-        public GraphComparer()
-        {
-            NodeComparer = new NodeComparer();
-            EdgeComparer = new EdgeComparer();
-            IncludeUserData = false;
-        }
-
         public bool IncludeUserData
         {
             get;
             set;
-        }
-        
+        } = false;
+
+        public bool IncludeSubGraphs
+        {
+            get;
+            set;
+        } = true;
+
         public IEqualityComparer<Node> NodeComparer
         {
             get;
             set;
-        }
+        } = new NodeComparer();
 
         public IEqualityComparer<Edge> EdgeComparer
         {
             get;
             set;
-        }
+        } = new EdgeComparer();
         
         public bool Equals(Graph x, Graph y)
         {
@@ -70,6 +70,48 @@ namespace Rivers
                     if (!y.UserData.TryGetValue(entry.Key, out var value) || !Equals(entry.Value, value))
                         return false;
                 }
+            }
+
+            if (IncludeSubGraphs)
+            {
+                if (x.SubGraphs.Count != y.SubGraphs.Count)
+                    return false;
+
+                var candidates = y.SubGraphs.ToList();
+                foreach (var subGraph in x.SubGraphs)
+                {
+                    var names = new HashSet<string>(subGraph.Nodes.Select(n => n.Name));
+                    
+                    // Find corresponding sub graph.
+                    foreach (var other in candidates.Where(g => g.Name == subGraph.Name))
+                    {
+                        // Check nodes.
+                        if (names.SetEquals(subGraph.Nodes.Select(n => n.Name)))
+                        {
+                            if (IncludeUserData)
+                            {
+                                if (subGraph.UserData.Count != other.UserData.Count)
+                                    return false;
+                
+                                foreach (var entry in subGraph.UserData)
+                                {
+                                    if (!other.UserData.TryGetValue(entry.Key, out var value) || !Equals(entry.Value, value))
+                                        return false;
+                                }
+                            }
+                            
+                            // Sub graph matched. Remove from candidate list.
+                            candidates.Remove(other);
+                            break;
+                        }
+
+                        return false;
+                    }
+                }
+
+                // If there are candidates left, we didn't match all sub graphs.
+                if (candidates.Count > 0)
+                    return false;
             }
 
             return true;

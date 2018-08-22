@@ -51,8 +51,9 @@ namespace Rivers.Serialization.Dot
         /// <param name="graph">The graph to write.</param>
         public void Write(Graph graph)
         {
-            WriteHeader(graph.IsDirected);
-
+            WriteHeader(graph.IsDirected ? "strict digraph" : "strict graph", graph.Name);
+            
+            // Userdata
             if (graph.UserData.Count > 0)
             {
                 WriteSeparatedString(graph.UserData, (IncludeSemicolons ? ";" : string.Empty) + Environment.NewLine);
@@ -60,7 +61,31 @@ namespace Rivers.Serialization.Dot
                 _writer.WriteLine();
             }
 
-            foreach (var node in graph.Nodes)
+            // Subgraphs
+            if (graph.SubGraphs.Count > 0)
+            {
+                foreach (var subGraph in graph.SubGraphs)
+                {
+                    WriteHeader("subgraph", subGraph.Name);
+                    
+                    if (subGraph.UserData.Count > 0)
+                    {
+                        WriteSeparatedString(subGraph.UserData, (IncludeSemicolons ? ";" : string.Empty) + Environment.NewLine);
+                        WriteSemicolon();
+                        _writer.WriteLine();
+                    }
+
+                    foreach (var node in subGraph.Nodes)
+                        Write(node);
+
+                    WriteFooter();
+                }
+
+                _writer.WriteLine();
+            }
+
+            // Nodes
+            foreach (var node in graph.Nodes.Where(x => x.SubGraphs.Count == 0))
             {
                 if (SeparateNodesAndEdges
                     || node.UserData.Count > 0
@@ -70,15 +95,18 @@ namespace Rivers.Serialization.Dot
                 }
             }
 
+            // Edges
             foreach (var edge in graph.Edges)
                 Write(edge);
 
             WriteFooter();
         }
 
-        private void WriteHeader(bool directed)
+        private void WriteHeader(string graphType, string identifier)
         {
-            _writer.WriteLine(directed ? "strict digraph {" : "strict graph {");
+            _writer.WriteLine(string.IsNullOrEmpty(identifier)
+                ? $"{graphType} {{" 
+                : $"{graphType} {identifier} {{");
         }
 
         private void WriteFooter()

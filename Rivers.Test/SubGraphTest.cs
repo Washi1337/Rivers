@@ -71,5 +71,25 @@ namespace Rivers.Test
             Assert.Empty(n1.SubGraphs);
             Assert.Single(subGraph.Nodes, n2);
         }
+
+        [Fact]
+        public void RemoveEntireSubGraph()
+        {
+            var g = new Graph();
+            var n1 = g.Nodes.Add("1");
+            var n2 = g.Nodes.Add("2");
+            g.Nodes.Add("3");
+
+            var subGraph = new SubGraph(n1, n2);
+            g.SubGraphs.Add(subGraph);
+
+            Assert.Single(n1.SubGraphs, subGraph);
+            Assert.Single(n2.SubGraphs, subGraph);
+            
+            g.SubGraphs.Remove(subGraph);
+            Assert.Empty(n1.SubGraphs);
+            Assert.Empty(n2.SubGraphs);
+
+        }
     }
 }

@@ -225,6 +225,8 @@ B -> C [color=green, style=dashed]
             g.Edges.Add("A", "B");
             g.Edges.Add("C", "D");
             
+            g.SubGraphs.Add(new SubGraph(g.Nodes["A"], g.Nodes["B"]));
+            
             var reader = new StringReader(
                 @"strict digraph { 
 
@@ -278,6 +280,8 @@ A -> B -> C
             g.Edges.Add("A", "B");
             g.Edges.Add("C", "D");
             
+            g.SubGraphs.Add(new SubGraph(g.Nodes["A"], g.Nodes["B"]));
+            
             var reader = new StringReader(
                 @"strict digraph { 
 
@@ -290,6 +294,7 @@ C -> D
             var h = dotReader.Read();
             Assert.Equal(g, h, new GraphComparer()
             {
+                IncludeSubGraphs = true,
                 NodeComparer = new NodeComparer() {IncludeUserData = true}
             });
         }
@@ -306,6 +311,8 @@ C -> D
             g.Edges.Add("A", "B");
             g.Edges.Add("C", "D");
             
+            g.SubGraphs.Add(new SubGraph("H", g.Nodes["A"], g.Nodes["B"]));
+            
             var reader = new StringReader(
                 @"strict digraph { 
 
@@ -318,6 +325,7 @@ C -> D
             var h = dotReader.Read();
             Assert.Equal(g, h, new GraphComparer()
             {
+                IncludeSubGraphs = true,
                 NodeComparer = new NodeComparer() {IncludeUserData = true}
             });
         }
@@ -334,6 +342,8 @@ C -> D
             g.Edges.Add("A", "C");
             g.Edges.Add("B", "C");
             
+            g.SubGraphs.Add(new SubGraph(g.Nodes["B"], g.Nodes["C"]));
+            
             var reader = new StringReader(
                 @"strict digraph { 
 
@@ -344,6 +354,7 @@ A -> { B -> C }
             var h = dotReader.Read();
             Assert.Equal(g, h, new GraphComparer()
             {
+                IncludeSubGraphs = true,
                 NodeComparer = new NodeComparer() {IncludeUserData = true}
             });
         }
@@ -360,6 +371,8 @@ A -> { B -> C }
             g.Edges.Add("B", "A");
             g.Edges.Add("C", "A");
             
+            g.SubGraphs.Add(new SubGraph(g.Nodes["B"], g.Nodes["C"]));
+            
             var reader = new StringReader(
                 @"strict digraph { 
 
@@ -370,6 +383,7 @@ A -> { B -> C }
             var h = dotReader.Read();
             Assert.Equal(g, h, new GraphComparer()
             {
+                IncludeSubGraphs = true,
                 NodeComparer = new NodeComparer() {IncludeUserData = true}
             });
         }
@@ -390,6 +404,9 @@ A -> { B -> C }
             g.Edges.Add("B", "D");
             g.Edges.Add("C", "D");
             
+            g.SubGraphs.Add(new SubGraph(g.Nodes["A"], g.Nodes["B"]));
+            g.SubGraphs.Add(new SubGraph(g.Nodes["C"], g.Nodes["D"]));
+            
             var reader = new StringReader(
                 @"strict digraph { 
 
@@ -400,6 +417,7 @@ A -> { B -> C }
             var h = dotReader.Read();
             Assert.Equal(g, h, new GraphComparer()
             {
+                IncludeSubGraphs = true,
                 NodeComparer = new NodeComparer() {IncludeUserData = true}
             });
         }
@@ -432,7 +450,7 @@ label=Test
             {
                 IncludeUserData = true
             });
-
         }
+        
     }
 }

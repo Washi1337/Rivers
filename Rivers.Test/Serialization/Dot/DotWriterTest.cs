@@ -162,5 +162,47 @@ namespace Rivers.Test.Serialization.Dot
 
             Validate(g, separate, semicolons);
         }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void AnonymousSubGraphs(bool directed)
+        {
+            var g = new Graph(directed);
+            g.Nodes.Add("A");
+            g.Nodes.Add("B");
+            g.Nodes.Add("C");
+
+            g.Edges.Add("A", "B");
+            g.Edges.Add("B", "C");
+            g.Edges.Add("C", "A");
+            
+            g.SubGraphs.Add(new SubGraph(g.Nodes["A"], g.Nodes["B"]));
+
+            Validate(g, true, true);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void NamedSubGraphs(bool directed)
+        {
+            var g = new Graph(directed);
+            g.Nodes.Add("A");
+            g.Nodes.Add("B");
+            g.Nodes.Add("C");
+
+            g.Edges.Add("A", "B");
+            g.Edges.Add("B", "C");
+            g.Edges.Add("C", "A");
+
+            var subGraph = new SubGraph("H", g.Nodes["A"], g.Nodes["B"]);
+            subGraph.UserData["color"] = "red";
+            g.SubGraphs.Add(subGraph);
+
+            Validate(g, true, true);
+        }
+        
+        
     }
 }
