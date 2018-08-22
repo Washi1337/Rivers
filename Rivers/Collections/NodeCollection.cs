@@ -129,9 +129,17 @@ namespace Rivers.Collections
         {
             if (Contains(item))
             {
+                // Remove all adjacent edges.
                 foreach (var edge in item.GetEdges().ToArray())
                     ParentGraph.Edges.Remove(edge);
-                
+
+                // Remove node from subgraphs.
+                if (item.SubGraphs.Count > 0)
+                {
+                    foreach (var subGraph in item.SubGraphs.ToArray())
+                        subGraph.Nodes.Remove(item);
+                }
+
                 _nodes.Remove(item.Name);
                 item.ParentGraph = null;
                 return true;
