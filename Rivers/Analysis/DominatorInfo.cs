@@ -8,6 +8,7 @@ namespace Rivers.Analysis
     /// </summary>
     public class DominatorInfo
     {
+        private readonly Node _entrypoint;
         private readonly IDictionary<Node, Node> _dominators;
         private readonly IDictionary<Node, ISet<Node>> _frontiers;
 
@@ -17,6 +18,7 @@ namespace Rivers.Analysis
         /// <param name="entrypoint"></param>
         public DominatorInfo(Node entrypoint)
         {
+            _entrypoint = entrypoint;
             _dominators = GetDominatorTree(entrypoint);
             _frontiers = GetDominanceFrontier(entrypoint.ParentGraph, _dominators);
         }
@@ -70,6 +72,32 @@ namespace Rivers.Analysis
             }
 
             return nodes;
+        }
+
+        /// <summary>
+        /// Constructs a dominator tree from the control flow graph.
+        /// </summary>
+        /// <returns>The constructed tree. Each node added to the tree is linked to a node in the original graph by
+        /// its name.</returns>
+        public Graph ToDominatorTree()
+        {
+            var tree = new Graph();
+            tree.Nodes.Add(_entrypoint.Name);
+            
+            foreach (var entry in _dominators)
+            {
+                var dominator = entry.Value;
+                var dominated = entry.Key;
+
+                if (dominator != dominated)
+                {
+                    var child = tree.Nodes.Add(dominated.Name);
+                    var parent = tree.Nodes.Add(dominator.Name);
+                    tree.Edges.Add(parent, child);
+                }
+            }
+
+            return tree;
         }
       
         /// <summary>

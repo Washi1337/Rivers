@@ -169,8 +169,12 @@ namespace Rivers.Serialization.Dot
             foreach (var entry in objects)
             {
                 WriteIdentifier(entry.Key.ToString());
-                _writer.Write('=');
-                WriteIdentifier(entry.Value.ToString());
+                if (entry.Value != null)
+                {
+                    _writer.Write('=');
+                    WriteIdentifier(entry.Value.ToString());
+                }
+
                 if (c < objects.Count - 1)
                     _writer.Write(separator);
                 c++;
