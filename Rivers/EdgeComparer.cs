@@ -5,16 +5,17 @@ namespace Rivers
 {
     public class EdgeComparer : IEqualityComparer<Edge>
     {
-        public EdgeComparer()
-        {
-            NameComparer = StringComparer.InvariantCulture;
-        }
-
         public IEqualityComparer<string> NameComparer
         {
             get;
             set;
-        }
+        } = StringComparer.InvariantCulture;
+
+        public IEqualityComparer<IDictionary<object, object>> UserDataComparer
+        {
+            get;
+            set;
+        } = new UserDataComparer();
 
         public bool IgnoreDirection
         {
@@ -37,19 +38,10 @@ namespace Rivers
             
             if (!EndpointEquals(x, y))
                 return false;
-                        
-            if (IncludeUserData)
-            {
-                if (x.UserData.Count != y.UserData.Count)
-                    return false;
-                
-                foreach (var entry in x.UserData)
-                {
-                    if (!y.UserData.TryGetValue(entry.Key, out var value) || !Equals(entry.Value, value))
-                        return false;
-                }
-            }
-
+             
+            if (IncludeUserData && !UserDataComparer.Equals(x.UserData, y.UserData))
+                return false;
+            
             return true;
         }
 

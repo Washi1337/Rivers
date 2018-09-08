@@ -26,13 +26,37 @@ namespace Rivers.Serialization.Dot
         {
         }
 
+        public DotReader(TextReader reader, IUserDataSerializer serializer)
+            : this (new DotTokenizer(reader), serializer)
+        {
+        }
+
         /// <summary>
         /// Creates a new dot file reader.
         /// </summary>
         /// <param name="tokenizer">The tokenizer responsible for providing the token stream of a dot file.</param>
         public DotReader(DotTokenizer tokenizer)
+            : this(tokenizer, new DefaultUserDataSerializer())
         {
+        }
+
+        /// <summary>
+        /// Creates a new dot file reader.
+        /// </summary>
+        /// <param name="tokenizer">The tokenizer responsible for providing the token stream of a dot file.</param>
+        /// <param name="serializer">The serializer used to interpret the strings found in the attributes.</param>
+        public DotReader(DotTokenizer tokenizer, IUserDataSerializer serializer)
+        {
+            Serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
             _tokenizer = tokenizer ?? throw new ArgumentNullException(nameof(tokenizer));
+        }
+
+        /// <summary>
+        /// Gets the serializer used for interpreting the values in the attributes given to nodes and edges.
+        /// </summary>
+        public IUserDataSerializer Serializer
+        {
+            get;
         }
 
         /// <summary>
@@ -103,7 +127,7 @@ namespace Rivers.Serialization.Dot
                 if (next.HasValue)
                 {
                     var value = ExpectOneOf(DotTerminal.Identifier);
-                    CurrentGraph.UserData[idToken.Text] = value.Text;
+                    CurrentGraph.UserData[idToken.Text] = Serializer.Deserialize(idToken.Text, value.Text);
                 }
                 else
                 {
@@ -244,13 +268,13 @@ namespace Rivers.Serialization.Dot
         /// Attempts to parse the attr_list grammar rule.
         /// </summary>
         /// <returns>A dictionary containing the attributes and their values, or null if it failed.</returns>
-        private IDictionary<string, string> TryReadAttributeList()
+        private IDictionary<string, object> TryReadAttributeList()
         {
             var open = TryExpectOneOf(DotTerminal.OpenBracket);
             if (open == null)
                 return null;
 
-            var properties = new Dictionary<string, string>();
+            var properties = new Dictionary<string, object>();
 
             do
             {
@@ -258,7 +282,7 @@ namespace Rivers.Serialization.Dot
                 ExpectOneOf(DotTerminal.Equal);
                 var value = ExpectOneOf(DotTerminal.Identifier);
 
-                properties[property.Text] = value.Text;
+                properties[property.Text] = Serializer.Deserialize(property.Text, value.Text);
             } while (TryExpectOneOf(DotTerminal.Comma, DotTerminal.SemiColon) != null);
 
             ExpectOneOf(DotTerminal.CloseBracket);

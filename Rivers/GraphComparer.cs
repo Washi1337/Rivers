@@ -29,6 +29,13 @@ namespace Rivers
             set;
         } = new EdgeComparer();
         
+
+        public IEqualityComparer<IDictionary<object, object>> UserDataComparer
+        {
+            get;
+            set;
+        } = new UserDataComparer();
+        
         public bool Equals(Graph x, Graph y)
         {
             if (ReferenceEquals(x, y))

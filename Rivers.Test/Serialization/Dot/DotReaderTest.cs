@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using Rivers.Serialization;
 using Rivers.Serialization.Dot;
 using Xunit;
@@ -451,6 +452,30 @@ label=Test
                 IncludeUserData = true
             });
         }
-        
+
+        [Fact]
+        public void CustomSerializer()
+        {
+            var g = new Graph();
+            var a = g.Nodes.Add("A");
+            var b = g.Nodes.Add("B");
+
+            a.UserData["MyIntegerList"] = new List<int> {1, 2, 3};
+            b.UserData["MyProperty"] = "SomeValue";
+            
+            var reader = new StringReader(
+                @"strict digraph {
+A [MyIntegerList=""1,2,3""]
+B [MyProperty=""SomeValue""]
+}");
+         
+            // stuff is happening here.
+            var dotReader = new DotReader(reader, new CustomUserDataSerializer());
+            var h = dotReader.Read();
+            Assert.Equal(g, h, new GraphComparer()
+            {
+                NodeComparer = new NodeComparer { IncludeUserData = true }
+            });   
+        }
     }
 }

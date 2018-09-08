@@ -25,7 +25,18 @@ namespace Rivers.Serialization.Dot
         /// </summary>
         /// <param name="writer">The writer responsible for writing the output.</param>
         public DotWriter(TextWriter writer)
+            : this(writer, new DefaultUserDataSerializer())
         {
+        }
+
+        /// <summary>
+        /// Creates a new dot writer, using the provided user data serializer.
+        /// </summary>
+        /// <param name="writer">The writer responsible for writing the output.</param>
+        /// <param name="serializer">The serializer used to convert the attributes stored in the UserData to their string representation.</param>
+        public DotWriter(TextWriter writer, IUserDataSerializer serializer)
+        {
+            Serializer = serializer;
             _writer = writer ?? throw new ArgumentNullException(nameof(writer));
         }
 
@@ -39,11 +50,22 @@ namespace Rivers.Serialization.Dot
             set;
         } = true;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether statements in the output file should be separated by semicolons.
+        /// </summary>
         public bool IncludeSemicolons
         {
             get;
             set;
         } = true;
+        
+        /// <summary>
+        /// Gets the serializer used to convert the attributes stored in the UserData to their string representation.
+        /// </summary>
+        public IUserDataSerializer Serializer
+        {
+            get;
+        }
         
         /// <summary>
         /// Writes a graph to the character stream.
@@ -172,7 +194,7 @@ namespace Rivers.Serialization.Dot
                 if (entry.Value != null)
                 {
                     _writer.Write('=');
-                    WriteIdentifier(entry.Value.ToString());
+                    WriteIdentifier(Serializer.Serialize(entry.Key.ToString(), entry.Value));
                 }
 
                 if (c < objects.Count - 1)

@@ -6,44 +6,41 @@ namespace Rivers
 {
     public class NodeComparer : IEqualityComparer<Node>
     {
-        public NodeComparer()
-        {
-            NameComparer = StringComparer.InvariantCulture;
-            IncludeName = true;
-            IncludeUserData = false;
-            IncludeInDegree = true;
-            IncludeOutDegree = true;
-        }
-
         public IEqualityComparer<string> NameComparer
         {
             get;
             set;
-        }
-        
+        } = StringComparer.InvariantCulture;
+
+        public IEqualityComparer<IDictionary<object, object>> UserDataComparer
+        {
+            get;
+            set;
+        } = new UserDataComparer();
+
         public bool IncludeName
         {
-            get; 
+            get;
             set;
-        }
-        
+        } = true;
+
         public bool IncludeUserData
         {
             get;
             set;
-        }
+        } = false;
 
         public bool IncludeInDegree
         {
             get;
             set;
-        }
+        } = true;
 
         public bool IncludeOutDegree
         {
             get;
             set;
-        }
+        } = true;
         
         public bool Equals(Node x, Node y)
         {
@@ -55,17 +52,8 @@ namespace Rivers
             if (IncludeName && !NameComparer.Equals(x.Name , y.Name))
                 return false;
 
-            if (IncludeUserData)
-            {
-                if (x.UserData.Count != y.UserData.Count)
-                    return false;
-                
-                foreach (var entry in x.UserData)
-                {
-                    if (!y.UserData.TryGetValue(entry.Key, out var value) || !Equals(entry.Value, value))
-                        return false;
-                }
-            }
+            if (IncludeUserData && !UserDataComparer.Equals(x.UserData, y.UserData))
+                return false;
 
             if (IncludeInDegree && x.InDegree != y.InDegree)
                 return false;

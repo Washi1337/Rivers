@@ -48,6 +48,8 @@
     <Compile Include="Collections\NodeSubGraphCollection.cs" />
     <Compile Include="Collections\SubGraphCollection.cs" />
     <Compile Include="Collections\SubGraphNodeCollection.cs" />
+    <Compile Include="Serialization\Dot\DefaultUserDataSerializer.cs" />
+    <Compile Include="Serialization\Dot\IUserDataSerializer.cs" />
     <Compile Include="SubGraph.cs" />
     <Compile Include="Collections\AdjacencyCollection.cs" />
     <Compile Include="Collections\DirectedAdjacencyCollection.cs" />
@@ -78,6 +80,7 @@
     <Compile Include="Serialization\SyntaxException.cs" />
     <Compile Include="Serialization\TextLocation.cs" />
     <Compile Include="Serialization\TextRange.cs" />
+    <Compile Include="UserDataComparer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
