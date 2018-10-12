@@ -469,7 +469,6 @@ A [MyIntegerList=""1,2,3""]
 B [MyProperty=""SomeValue""]
 }");
          
-            // stuff is happening here.
             var dotReader = new DotReader(reader, new CustomUserDataSerializer());
             var h = dotReader.Read();
             Assert.Equal(g, h, new GraphComparer()
