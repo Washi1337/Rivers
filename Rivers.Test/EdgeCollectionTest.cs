@@ -8,7 +8,7 @@ namespace Rivers.Test
         public void EmptyCollection()
         {
             var g = new Graph();
-            Assert.Equal(0, g.Edges.Count);
+            Assert.Empty(g.Edges);
         }
 
         [Fact]
@@ -35,7 +35,7 @@ namespace Rivers.Test
 
             var edge1 = g.Edges.Add(node1, node2);
             var edge2 = g.Edges.Add(node1, node2);
-            Assert.Equal(1, g.Edges.Count);
+            Assert.Single(g.Edges);
             Assert.Equal(edge1, edge2);
         }
 
