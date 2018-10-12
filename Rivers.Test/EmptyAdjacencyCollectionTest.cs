@@ -10,8 +10,8 @@ namespace Rivers.Test
         {
             var node = new Node("1");
             
-            Assert.Equal(0, node.IncomingEdges.Count);
-            Assert.Equal(0, node.OutgoingEdges.Count);
+            Assert.Empty(node.IncomingEdges);
+            Assert.Empty(node.OutgoingEdges);
         }
 
         [Fact]

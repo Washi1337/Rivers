@@ -10,8 +10,8 @@ namespace Rivers.Test
             var g = new Graph(false);
             var node = g.Nodes.Add("1");
             
-            Assert.Equal(0, node.IncomingEdges.Count);
-            Assert.Equal(0, node.OutgoingEdges.Count);
+            Assert.Empty(node.IncomingEdges);
+            Assert.Empty(node.OutgoingEdges);
         }
 
         [Fact]
@@ -25,17 +25,17 @@ namespace Rivers.Test
             node2.IncomingEdges.Add(edge);
 
             Assert.Contains(edge, node1.IncomingEdges);
-            Assert.Equal(1, node1.OutgoingEdges.Count);
+            Assert.Single(node1.OutgoingEdges);
             Assert.Contains(edge, node1.OutgoingEdges);
-            Assert.Equal(1, node1.OutgoingEdges.Count);
+            Assert.Single(node1.OutgoingEdges);
             
             Assert.Contains(edge, node2.IncomingEdges);
-            Assert.Equal(1, node2.OutgoingEdges.Count);
+            Assert.Single(node2.OutgoingEdges);
             Assert.Contains(edge, node2.OutgoingEdges);
-            Assert.Equal(1, node2.OutgoingEdges.Count);
+            Assert.Single(node2.OutgoingEdges);
             
             Assert.Contains(edge, g.Edges);
-            Assert.Equal(1, g.Edges.Count);
+            Assert.Single(g.Edges);
         }
 
         [Fact]
@@ -49,17 +49,17 @@ namespace Rivers.Test
             node2.OutgoingEdges.Add(edge);
 
             Assert.Contains(edge, node1.IncomingEdges);
-            Assert.Equal(1, node1.OutgoingEdges.Count);
+            Assert.Single(node1.OutgoingEdges);
             Assert.Contains(edge, node1.OutgoingEdges);
-            Assert.Equal(1, node1.OutgoingEdges.Count);
+            Assert.Single(node1.OutgoingEdges);
             
             Assert.Contains(edge, node2.IncomingEdges);
-            Assert.Equal(1, node2.OutgoingEdges.Count);
+            Assert.Single(node2.OutgoingEdges);
             Assert.Contains(edge, node2.OutgoingEdges);
-            Assert.Equal(1, node2.OutgoingEdges.Count);
+            Assert.Single(node2.OutgoingEdges);
             
             Assert.Contains(edge, g.Edges);
-            Assert.Equal(1, g.Edges.Count);
+            Assert.Single(g.Edges);
         }
     }
 }

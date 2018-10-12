@@ -10,7 +10,7 @@ namespace Rivers.Test
         public void EmptyCollection()
         {
             var g = new Graph();
-            Assert.Equal(0, g.Nodes.Count);
+            Assert.Empty(g.Nodes);
         }
 
         [Fact]
@@ -21,7 +21,7 @@ namespace Rivers.Test
             
             g.Nodes.Add(node);
 
-            Assert.Equal(1, g.Nodes.Count);
+            Assert.Single(g.Nodes);
             Assert.Contains(node, g.Nodes);
             Assert.Equal(g, node.ParentGraph);
         }
@@ -36,7 +36,7 @@ namespace Rivers.Test
             g.Nodes.Add(node);
             g.Nodes.Add(node);
 
-            Assert.Equal(1, g.Nodes.Count);
+            Assert.Single(g.Nodes);
         }
 
         [Fact]
