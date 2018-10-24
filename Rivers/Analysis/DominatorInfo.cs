@@ -201,5 +201,24 @@ namespace Rivers.Analysis
             return frontier;
         }
 
+        /// <summary>
+        /// Determines whether a node is dominated by another node.
+        /// </summary>
+        /// <param name="dominator">The node to check for being the dominator.</param>
+        /// <param name="dominated">The dominated node.</param>
+        /// <returns>True if the dominator actually dominates the node, false otherwise.</returns>
+        public bool Dominates(Node dominator, Node dominated)
+        {
+            var current = dominated;
+            while (true)
+            {
+                if (current == dominator)
+                    return true;
+                var node = GetImmediateDominator(current);
+                if (node == current)
+                    return false;
+                current = node;
+            }
+        }
     }
 }

@@ -98,5 +98,41 @@ namespace Rivers.Test.Analysis
             Assert.True(info.GetDominatedNodes(cfg.Nodes["3"]).SetEquals(new[] {cfg.Nodes["3"]}));
             Assert.True(info.GetDominatedNodes(cfg.Nodes["4"]).SetEquals(new[] {cfg.Nodes["4"]}));
         }
+
+        [Fact]
+        public void Dominates()
+        {
+            var cfg = new Graph();
+            cfg.Nodes.Add("1");
+            cfg.Nodes.Add("2");
+            cfg.Nodes.Add("3");
+            cfg.Nodes.Add("4");
+
+            cfg.Edges.Add("1", "2");
+            cfg.Edges.Add("2", "3");
+            cfg.Edges.Add("3", "4");
+            var info = new DominatorInfo(cfg.Nodes["1"]);
+
+            Assert.True(info.Dominates(cfg.Nodes["1"], cfg.Nodes["1"]));
+            Assert.True(info.Dominates(cfg.Nodes["1"], cfg.Nodes["2"]));
+            Assert.True(info.Dominates(cfg.Nodes["1"], cfg.Nodes["3"]));
+            Assert.True(info.Dominates(cfg.Nodes["1"], cfg.Nodes["4"]));
+            
+            Assert.False(info.Dominates(cfg.Nodes["2"], cfg.Nodes["1"]));
+            Assert.True(info.Dominates(cfg.Nodes["2"], cfg.Nodes["2"]));
+            Assert.True(info.Dominates(cfg.Nodes["2"], cfg.Nodes["3"]));
+            Assert.True(info.Dominates(cfg.Nodes["2"], cfg.Nodes["4"]));
+            
+            Assert.False(info.Dominates(cfg.Nodes["3"], cfg.Nodes["1"]));
+            Assert.False(info.Dominates(cfg.Nodes["3"], cfg.Nodes["2"]));
+            Assert.True(info.Dominates(cfg.Nodes["3"], cfg.Nodes["3"]));
+            Assert.True(info.Dominates(cfg.Nodes["3"], cfg.Nodes["4"]));
+            
+            Assert.False(info.Dominates(cfg.Nodes["4"], cfg.Nodes["1"]));
+            Assert.False(info.Dominates(cfg.Nodes["4"], cfg.Nodes["2"]));
+            Assert.False(info.Dominates(cfg.Nodes["4"], cfg.Nodes["3"]));
+            Assert.True(info.Dominates(cfg.Nodes["4"], cfg.Nodes["4"]));
+            
+        }
     }
 }
