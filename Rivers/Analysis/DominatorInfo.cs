@@ -220,5 +220,25 @@ namespace Rivers.Analysis
                 current = node;
             }
         }
+
+        /// <summary>
+        /// Determines whether an edge is a back-edge or not. That is, whether its target dominates its source. 
+        /// </summary>
+        /// <param name="edge">The edge to check.</param>
+        /// <returns>True if the edge is a back-edge, false otherwise.</returns>
+        public bool IsBackEdge(Edge edge)
+        {
+            return Dominates(edge.Target, edge.Source);
+        }
+        
+        /// <summary>
+        /// Determines whether a node is a loop header or not. That is, whether it is a target of any back-edge.
+        /// </summary>
+        /// <param name="node">The node to check.</param>
+        /// <returns>True if the node is a loop header, false otherwise.</returns>
+        public bool IsLoopHeader(Node node)
+        {
+            return node.IncomingEdges.Any(IsBackEdge);
+        }
     }
 }

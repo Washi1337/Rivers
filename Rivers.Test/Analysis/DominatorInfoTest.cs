@@ -132,7 +132,15 @@ namespace Rivers.Test.Analysis
             Assert.False(info.Dominates(cfg.Nodes["4"], cfg.Nodes["2"]));
             Assert.False(info.Dominates(cfg.Nodes["4"], cfg.Nodes["3"]));
             Assert.True(info.Dominates(cfg.Nodes["4"], cfg.Nodes["4"]));
-            
+        }
+
+        [Fact]
+        public void LoopHeader()
+        {
+            var cfg = LoopGraph;
+            var info = new DominatorInfo(cfg.Nodes["1"]);
+            Assert.True(info.IsLoopHeader(cfg.Nodes["2"]));
+            Assert.False(info.IsLoopHeader(cfg.Nodes["1"]));
         }
     }
 }
