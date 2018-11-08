@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Rivers
 {
@@ -10,5 +10,6 @@ namespace Rivers
         {
             return dict.TryGetValue(key, out var value) ? value : defaultValue;
         }
+
     }
 }

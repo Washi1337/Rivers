@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rivers.Analysis.Partitioning
 {
@@ -17,8 +19,8 @@ namespace Rivers.Analysis.Partitioning
         public static IDictionary<Node, int> FindColoring(Graph graph)
         {
             var refinement = new ColorRefinement(graph);
-            refinement.FindColoring();
-            return refinement._colorAssignment;
+            refinement.RefinePartitioning();
+            return refinement.ColorAssignment;
         }
 
         /// <summary>
@@ -41,48 +43,81 @@ namespace Rivers.Analysis.Partitioning
             var union = new Graph(graphs[0].IsDirected);
             for (int i = 0; i < graphs.Count; i++)
                 union.DisjointUnionWith(graphs[i], i + "_", false);
-
+            
             var refinement = new ColorRefinement(union);
-            refinement.FindColoring();
+            refinement.RefinePartitioning();
             
             var newAssignment = new Dictionary<Node, int>();
-            foreach (var entry in refinement._colorAssignment)
+            foreach (var entry in refinement.ColorAssignment)
             {
                 string nodeName = entry.Key.Name;
-                
+
                 int index = nodeName.IndexOf('_');
                 int graphIndex = int.Parse(nodeName.Remove(index));
                 string actualName = nodeName.Substring(index + 1);
-                
+
                 newAssignment[graphs[graphIndex].Nodes[actualName]] = entry.Value;
             }
-            
+
             return newAssignment;
         }
-        
-        private readonly IDictionary<Node, int> _colorAssignment = new Dictionary<Node, int>();
-        private readonly IDictionary<int, ISet<Node>> _colorSets = new Dictionary<int, ISet<Node>>();
+
         private readonly Graph _graph;
 
-        private ColorRefinement(Graph graph)
+        public ColorRefinement(Graph graph)
         {
             _graph = graph ?? throw new ArgumentNullException(nameof(graph));
         }
 
+        public IDictionary<Node, int> ColorAssignment
+        {
+            get;
+        } = new Dictionary<Node, int>();
+
+        public IDictionary<int, ISet<Node>> ColorSets
+        {
+            get;
+        } = new Dictionary<int, ISet<Node>>();
+
+        public List<Node> D
+        {
+            get;
+        } = new List<Node>();
+
+        public List<Node> I
+        {
+            get;
+        } = new List<Node>();
+
         /// <summary>
         /// Defines a coarse partitioning that categorizes nodes based on the degree of the node.
         /// </summary>
-        private void InitializeColors()
+        private int InitializeColoring()
         {
+            ColorAssignment.Clear();
+            ColorSets.Clear();
             foreach (var node in _graph.Nodes)
             {
                 int color = node.OutDegree;
-                _colorAssignment[node] = color;
-                
-                if (!_colorSets.TryGetValue(color, out var set))
-                    _colorSets[color] = set = new HashSet<Node>();
-                set.Add(node);
+                ColorAssignment[node] = color;
             }
+
+            int nextColor = ColorAssignment.Values.Max() + 1;
+            for (int i = 0; i < D.Count; i++)
+            {
+                ColorAssignment[D[i]] = nextColor;
+                ColorAssignment[I[i]] = nextColor;
+                nextColor++;
+            }
+
+            foreach (var entry in ColorAssignment)
+            {
+                if (!ColorSets.TryGetValue(entry.Value, out var set))
+                    ColorSets[entry.Value] = set = new HashSet<Node>();
+                set.Add(entry.Key);
+            }
+            
+            return nextColor;
         }
 
         /// <summary>
@@ -127,27 +162,14 @@ namespace Rivers.Analysis.Partitioning
         /// Attempts to determine a refinement of the current partitioning. 
         /// </summary>
         /// <param name="color">The color to refine for.</param>
-        /// <param name="colorSets">All categories currently determined.</param>
+        /// <param name="ColorSets">All categories currently determined.</param>
         /// <returns>A refinement of the current partitioning, grouped by color.</returns>
-        private Dictionary<int, IDictionary<int, ISet<Node>>> FindRefinements(int color, IDictionary<int, ISet<Node>> colorSets)
+        private Dictionary<int, IDictionary<int, ISet<Node>>> FindRefinements(int color)
         {
-            var neighbourCounts = new Dictionary<Node, int>();
-            foreach (var node in colorSets[color])
-            {
-                foreach (var neighbour in node.GetNeighbours())
-                {
-                    if (_colorAssignment[neighbour] != color)
-                    {
-                        if (!neighbourCounts.ContainsKey(neighbour))
-                            neighbourCounts[neighbour] = 1;
-                        else
-                            neighbourCounts[neighbour]++;
-                    }
-                }
-            }
+            var neighbourCounts = CountNeighboursOfColor(color);
 
             var refinementsByColor = new Dictionary<int, IDictionary<int, ISet<Node>>>();
-            foreach (var entry in colorSets)
+            foreach (var entry in ColorSets)
             {
                 var refinements = new Dictionary<int, ISet<Node>>();
                 foreach (var node in entry.Value)
@@ -168,24 +190,47 @@ namespace Rivers.Analysis.Partitioning
         }
 
         /// <summary>
-        /// Finds a coloring for the graph the class was initialized with.
+        /// Determines for each node present in a provided category the amount of neighbours with other categories.
         /// </summary>
-        private void FindColoring()
+        /// <param name="color">The category to check for.</param>
+        /// <returns>A dictionary that maps each node to the number of neighbours.</returns>
+        private Dictionary<Node, int> CountNeighboursOfColor(int color)
+        {
+            var neighbourCounts = new Dictionary<Node, int>();
+            foreach (var node in ColorSets[color])
+            {
+                foreach (var neighbour in node.GetNeighbours())
+                {
+                    if (ColorAssignment[neighbour] != color)
+                    {
+                        if (!neighbourCounts.ContainsKey(neighbour))
+                            neighbourCounts[neighbour] = 1;
+                        else
+                            neighbourCounts[neighbour]++;
+                    }
+                }
+            }
+
+            return neighbourCounts;
+        }
+
+        /// <summary>
+        /// Refines the current partitioning of nodes in the graph to the next coarsest stable refinement. 
+        /// </summary>
+        public void RefinePartitioning()
         {
             var colorsInQueue = new HashSet<int>();
             var queue = new Queue<int>();
             
-            InitializeColors();
-            int nextColor = _colorSets.Count;
-            
-            FillQueue(queue, colorsInQueue, _colorSets, null);
+            int nextColor = InitializeColoring();
+            FillQueue(queue, colorsInQueue, ColorSets, null);
 
             while (queue.Count > 0)
             {
                 int currentColor = queue.Dequeue();
                 colorsInQueue.Remove(currentColor);
 
-                var newRefinements = FindRefinements(currentColor, _colorSets);
+                var newRefinements = FindRefinements(currentColor);
                 var addedColors = new Dictionary<int, ISet<Node>>();
                 
                 foreach (var entry in newRefinements)
@@ -202,7 +247,7 @@ namespace Rivers.Analysis.Partitioning
                             if (hasUpdatedOriginalCell)
                             {
                                 foreach (var n in newCell)
-                                    _colorAssignment[n] = nextColor;
+                                    ColorAssignment[n] = nextColor;
                                 nextColor++;
                             }
                             hasUpdatedOriginalCell = true;
@@ -213,7 +258,7 @@ namespace Rivers.Analysis.Partitioning
                 }
 
                 foreach (var entry in addedColors)
-                    _colorSets[entry.Key] = entry.Value;
+                    ColorSets[entry.Key] = entry.Value;
             }
         }
         
