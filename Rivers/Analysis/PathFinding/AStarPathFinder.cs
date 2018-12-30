@@ -39,7 +39,7 @@ namespace Rivers.Analysis.PathFinding
             var table = new DistanceTable(source);
             
             var closedSet = new HashSet<Node>();
-            var openSet = new HashSet<Node>();
+            var openSet = new HashSet<Node> {source};
 
             var heuristics = new Dictionary<Node, double> {[source] = _heuristic(source, destination)};
 
@@ -66,6 +66,7 @@ namespace Rivers.Analysis.PathFinding
                         continue;
                     }
 
+                    table.Previous[neighbour] = current;
                     table.Distances[neighbour] = newDistance;
                     heuristics[neighbour] = newDistance + _heuristic(neighbour, destination);
                 }

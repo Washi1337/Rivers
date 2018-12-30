@@ -3,7 +3,8 @@
 namespace Rivers.Generators
 {
     /// <summary>
-    /// Provides a mechanism for generating cycle graphs. 
+    /// Provides a mechanism for generating cycle graphs.
+    /// Nodes are named by the numbers 0 to (length - 1). 
     /// </summary>
     public class CycleGenerator : IGraphGenerator
     {

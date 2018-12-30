@@ -11,8 +11,15 @@ namespace Rivers.Analysis.PathFinding
         public DistanceTable(Node source)
         {
             Source = source ?? throw new ArgumentNullException(nameof(source));
-            Distances = new Dictionary<Node, double>();
-            Previous = new Dictionary<Node, Node>();
+            Distances = new Dictionary<Node, double>
+            {
+                [source] = 0,
+            };
+
+            Previous = new Dictionary<Node, Node>
+            {
+              //  [source] = source
+            };
         }
 
         /// <summary>

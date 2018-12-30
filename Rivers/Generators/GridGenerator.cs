@@ -1,3 +1,5 @@
+using System;
+
 namespace Rivers.Generators
 {
     /// <summary>
@@ -7,6 +9,8 @@ namespace Rivers.Generators
     {
         public GridGenerator(bool directed, int width, int height)
         {
+            if (width < 0 || height < 0)
+                throw new ArgumentException("Dimensions must be non-negative numbers.");
             Directed = directed;
             Width = width;
             Height = height;
