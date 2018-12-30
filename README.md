@@ -17,8 +17,11 @@ Features
     - Minimal memory footprint.
     - Efficient for sparse graphs.
 - Support for directed as well as undirected graphs. The default is directed.
+- Support for grouping nodes into subgraphs.
 - Various graph generators to help building up common graph structures.
 - Various built-in node traversal and search algorithms (including breadth first, depth first and more).
+- Pathfinding algorithms such as Dijkstra and A*
+- Partitioning and isomorphism finder algorithms
 - Built-in dominator analysis. Useful for control flow graph analysis.
     - Construct dominator trees from CFGs.
     - Get dominance frontier.
