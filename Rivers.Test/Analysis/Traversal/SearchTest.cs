@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using Rivers.Analysis;
+using Rivers.Analysis.Traversal;
 using Xunit;
 
-namespace Rivers.Test.Analysis
+namespace Rivers.Test.Analysis.Traversal
 {
     public class SearchTest
     {
@@ -50,19 +50,25 @@ namespace Rivers.Test.Analysis
         [Fact]
         public void BreadthFirstOrderTest()
         {
-            var order = Tree.Nodes["1"].BreadthFirstTraversal().ToList();
-            Assert.True(order.IndexOf(Tree.Nodes["2"]) < order.IndexOf(Tree.Nodes["4A"]));
-            Assert.True(order.IndexOf(Tree.Nodes["3A"]) < order.IndexOf(Tree.Nodes["4A"]));
+            var traversal = new BreadthFirstTraversal();
+            var orderRecorder = new TraversalOrderRecorder(traversal);
+            traversal.Run(Tree.Nodes["1"]);
+            
+            Assert.True(orderRecorder.GetIndex(Tree.Nodes["2"]) < orderRecorder.GetIndex(Tree.Nodes["4A"]));
+            Assert.True(orderRecorder.GetIndex(Tree.Nodes["3A"]) < orderRecorder.GetIndex(Tree.Nodes["4A"]));
         }
         
         [Fact]
         public void DepthFirstOrderTest()
         {
-            var order = Tree.Nodes["1"].DepthFirstTraversal().ToList();
-            if (order.IndexOf(Tree.Nodes["2"]) < order.IndexOf(Tree.Nodes["3A"]))
-                Assert.True(order.IndexOf(Tree.Nodes["4A"]) < order.IndexOf(Tree.Nodes["3A"]));
+            var traversal = new DepthFirstTraversal();
+            var recorder = new TraversalOrderRecorder(traversal);
+            traversal.Run(Tree.Nodes["1"]);
+            
+            if (recorder.GetIndex(Tree.Nodes["2"]) < recorder.GetIndex(Tree.Nodes["3A"]))
+                Assert.True(recorder.GetIndex(Tree.Nodes["4A"]) < recorder.GetIndex(Tree.Nodes["3A"]));
             else
-                Assert.True(order.IndexOf(Tree.Nodes["5"]) < order.IndexOf(Tree.Nodes["4A"]));
+                Assert.True(recorder.GetIndex(Tree.Nodes["5"]) < recorder.GetIndex(Tree.Nodes["4A"]));
         }
 
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Rivers.Analysis.Traversal;
 
 namespace Rivers.Analysis
 {
@@ -19,13 +20,25 @@ namespace Rivers.Analysis
                 if (!visited.Add(node))
                     return false;
 
+                bool cycleDetected = false;
+
                 var reachableNodes = new HashSet<Node>();
                 var visitedEdges = new HashSet<Edge>();
+                
+                var traversal = new DepthFirstTraversal();
+                traversal.NodeDiscovered += (sender, args) =>
+                {
+                    if (visitedEdges.Add(args.Origin) && !reachableNodes.Add(args.NewNode))
+                    {
+                        args.ContinueExploring = false;
+                        cycleDetected = true;
+                    }
+                };
+                traversal.Run(node);
 
-                if (node.DepthFirstTraversal((n, e) => visitedEdges.Add(e))
-                    .Any(successor => !reachableNodes.Add(successor)))
+                if (cycleDetected)
                     return true;
-
+                
                 visited.UnionWith(reachableNodes);
             }
 
@@ -46,7 +59,7 @@ namespace Rivers.Analysis
             if (graph.IsDirected)
                 graph = graph.ToUndirected();
             
-            return graph.Nodes.First().BreadthFirstTraversal().Count() == graph.Nodes.Count;
+            return graph.Nodes.First().GetReachableNodes().Count == graph.Nodes.Count;
         }
         
         /// <summary>
@@ -56,18 +69,7 @@ namespace Rivers.Analysis
         /// <returns>True if the graph is a tree, false otherwise.</returns>
         public static bool IsTree(this Graph graph)
         {
-            var node = graph.Nodes.First();
-            int count = 1;
-            
-            var visitedEdges = new HashSet<Edge>();
-            foreach (var descendant in node.BreadthFirstTraversal((n, e) => visitedEdges.Add(e)).Skip(1))
-            {
-                if (descendant == node)
-                    return false;
-                count++;
-            }
-
-            return count == graph.Nodes.Count;
+            return !graph.IsCyclic();
         }
 
         /// <summary>
