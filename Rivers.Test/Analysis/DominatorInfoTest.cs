@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using Rivers.Analysis;
+using Rivers.Serialization.Dot;
 using Xunit;
 
 namespace Rivers.Test.Analysis
@@ -141,6 +143,75 @@ namespace Rivers.Test.Analysis
             var info = new DominatorInfo(cfg.Nodes["1"]);
             Assert.True(info.IsLoopHeader(cfg.Nodes["2"]));
             Assert.False(info.IsLoopHeader(cfg.Nodes["1"]));
+        }
+
+        [Fact]
+        public void ComplexLoopTest()
+        {
+            var reader = new DotReader(new StringReader(@"
+            strict digraph {
+                1 -> 2 -> 3 -> 4 -> 3 -> 5 -> 6 -> 7
+            }"));
+            
+            var cfg = reader.Read();
+            
+            var info = new DominatorInfo(cfg.Nodes["1"]);
+            
+            Assert.True(info.Dominates(cfg.Nodes["1"], cfg.Nodes["1"]));
+            Assert.True(info.Dominates(cfg.Nodes["1"], cfg.Nodes["2"]));
+            Assert.True(info.Dominates(cfg.Nodes["1"], cfg.Nodes["3"]));
+            Assert.True(info.Dominates(cfg.Nodes["1"], cfg.Nodes["4"]));
+            Assert.True(info.Dominates(cfg.Nodes["1"], cfg.Nodes["5"]));
+            Assert.True(info.Dominates(cfg.Nodes["1"], cfg.Nodes["6"]));
+            Assert.True(info.Dominates(cfg.Nodes["1"], cfg.Nodes["7"]));
+            
+            Assert.False(info.Dominates(cfg.Nodes["2"], cfg.Nodes["1"]));
+            Assert.True(info.Dominates(cfg.Nodes["2"], cfg.Nodes["2"]));
+            Assert.True(info.Dominates(cfg.Nodes["2"], cfg.Nodes["3"]));
+            Assert.True(info.Dominates(cfg.Nodes["2"], cfg.Nodes["4"]));
+            Assert.True(info.Dominates(cfg.Nodes["2"], cfg.Nodes["5"]));
+            Assert.True(info.Dominates(cfg.Nodes["2"], cfg.Nodes["6"]));
+            Assert.True(info.Dominates(cfg.Nodes["2"], cfg.Nodes["7"]));
+            
+            Assert.False(info.Dominates(cfg.Nodes["3"], cfg.Nodes["1"]));
+            Assert.False(info.Dominates(cfg.Nodes["3"], cfg.Nodes["2"]));
+            Assert.True(info.Dominates(cfg.Nodes["3"], cfg.Nodes["3"]));
+            Assert.True(info.Dominates(cfg.Nodes["3"], cfg.Nodes["4"]));
+            Assert.True(info.Dominates(cfg.Nodes["3"], cfg.Nodes["5"]));
+            Assert.True(info.Dominates(cfg.Nodes["3"], cfg.Nodes["6"]));
+            Assert.True(info.Dominates(cfg.Nodes["3"], cfg.Nodes["7"]));
+            
+            Assert.False(info.Dominates(cfg.Nodes["4"], cfg.Nodes["1"]));
+            Assert.False(info.Dominates(cfg.Nodes["4"], cfg.Nodes["2"]));
+            Assert.False(info.Dominates(cfg.Nodes["4"], cfg.Nodes["3"]));
+            Assert.True(info.Dominates(cfg.Nodes["4"], cfg.Nodes["4"]));
+            Assert.False(info.Dominates(cfg.Nodes["4"], cfg.Nodes["5"]));
+            Assert.False(info.Dominates(cfg.Nodes["4"], cfg.Nodes["6"]));
+            Assert.False(info.Dominates(cfg.Nodes["4"], cfg.Nodes["7"]));
+            
+            Assert.False(info.Dominates(cfg.Nodes["5"], cfg.Nodes["1"]));
+            Assert.False(info.Dominates(cfg.Nodes["5"], cfg.Nodes["2"]));
+            Assert.False(info.Dominates(cfg.Nodes["5"], cfg.Nodes["3"]));
+            Assert.False(info.Dominates(cfg.Nodes["5"], cfg.Nodes["4"]));
+            Assert.True(info.Dominates(cfg.Nodes["5"], cfg.Nodes["5"]));
+            Assert.True(info.Dominates(cfg.Nodes["5"], cfg.Nodes["6"]));
+            Assert.True(info.Dominates(cfg.Nodes["5"], cfg.Nodes["7"]));
+            
+            Assert.False(info.Dominates(cfg.Nodes["6"], cfg.Nodes["1"]));
+            Assert.False(info.Dominates(cfg.Nodes["6"], cfg.Nodes["2"]));
+            Assert.False(info.Dominates(cfg.Nodes["6"], cfg.Nodes["3"]));
+            Assert.False(info.Dominates(cfg.Nodes["6"], cfg.Nodes["4"]));
+            Assert.False(info.Dominates(cfg.Nodes["6"], cfg.Nodes["5"]));
+            Assert.True(info.Dominates(cfg.Nodes["6"], cfg.Nodes["6"]));
+            Assert.True(info.Dominates(cfg.Nodes["6"], cfg.Nodes["7"]));
+            
+            Assert.False(info.Dominates(cfg.Nodes["7"], cfg.Nodes["1"]));
+            Assert.False(info.Dominates(cfg.Nodes["7"], cfg.Nodes["2"]));
+            Assert.False(info.Dominates(cfg.Nodes["7"], cfg.Nodes["3"]));
+            Assert.False(info.Dominates(cfg.Nodes["7"], cfg.Nodes["4"]));
+            Assert.False(info.Dominates(cfg.Nodes["7"], cfg.Nodes["5"]));
+            Assert.False(info.Dominates(cfg.Nodes["7"], cfg.Nodes["6"]));
+            Assert.True(info.Dominates(cfg.Nodes["7"], cfg.Nodes["7"]));
         }
     }
 }

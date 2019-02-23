@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using Rivers.Analysis.Traversal;
 
 namespace Rivers.Analysis
 {
@@ -99,76 +101,95 @@ namespace Rivers.Analysis
 
             return tree;
         }
-      
+
         /// <summary>
         /// Computes the dominator tree of a control flow graph, defined by its entrypoint.
         /// </summary>
         /// <param name="entrypoint">The entrypoint of the control flow graph.</param>
         /// <returns>A dictionary mapping all the nodes to their immediate dominator.</returns>
         /// <remarks>
-        /// Algorithm is based on the paper:
-        ///     Keith D. Cooper, Timothy J. Harvey, and Ken Kennedy
-        ///     A Simple, Fast Dominance Algorithm
-        ///     https://www.cs.rice.edu/~keith/Embed/dom.pdf (Accessed on June 2018)
-        /// </remarks>
+        /// The algorithm used is based on the one engineered by Lengauer and Tarjan.
+        /// https://www.cs.princeton.edu/courses/archive/fall03/cs528/handouts/a%20fast%20algorithm%20for%20finding.pdf
+        /// https://www.cl.cam.ac.uk/~mr10/lengtarj.pdf
+        /// </remarks> 
         private static IDictionary<Node, Node> GetDominatorTree(Node entrypoint)
         {
-            var dominators = entrypoint.ParentGraph.Nodes.ToDictionary(x => x, null);
-            dominators[entrypoint] = entrypoint;
+            var idom = new Dictionary<Node, Node>();
+            var semi = new Dictionary<Node, Node>();
+            var ancestor = new Dictionary<Node, Node>();
+            var bucket = new Dictionary<Node, ISet<Node>>();
 
-            bool changed = true;
-            while (changed)
+            var traversal = new DepthFirstTraversal();
+            var order = new TraversalOrderRecorder(traversal);
+            var parents = new ParentRecorder(traversal);
+            traversal.Run(entrypoint);
+
+            var orderedNodes = order.GetTraversal();            
+            foreach (var node in orderedNodes)
             {
-                changed = false;
-                foreach (var node in entrypoint.ParentGraph.Nodes)
-                {
-                    if (node == entrypoint)
-                        continue;
-
-                    var first = node.GetPredecessors().First();
-                    var newIdom = first;
-                    foreach (var otherPred in node.GetPredecessors())
-                    {
-                        if (otherPred == first)
-                            continue;
-                        if (dominators[otherPred] != null)
-                            newIdom = Intersect(dominators, otherPred, newIdom);
-                    }
-
-                    if (dominators[node] != newIdom)
-                    {
-                        dominators[node] = newIdom;
-                        changed = true;
-                    }
-                }
+                idom[node] = null;
+                semi[node] = node;
+                ancestor[node] = null;
+                bucket[node] = new HashSet<Node>();
             }
 
-            return dominators;
+            for (int i = orderedNodes.Count - 1; i >= 1; i--)
+            {
+                var current = orderedNodes[i];
+                var parent = parents.GetParent(current);
+
+                // step 2
+                foreach (var predecessor in current.GetPredecessors())
+                {
+                    var u = Eval(predecessor, ancestor, semi, order);
+                    if (order.GetIndex(semi[current]) > order.GetIndex(semi[u]))
+                        semi[current] = semi[u];
+                }
+
+                bucket[semi[current]].Add(current);
+                Link(parent, current, ancestor);
+                
+                // step 3
+                foreach (var bucketNode in bucket[parent])
+                {
+                    var u = Eval(bucketNode, ancestor, semi, order);
+                    if (order.GetIndex(semi[u]) < order.GetIndex(semi[bucketNode]))
+                        idom[bucketNode] = u;
+                    else
+                        idom[bucketNode] = parent;
+                }
+
+                bucket[parent].Clear();
+            }
+
+            // step 4
+            for (int i = 1; i < orderedNodes.Count; i++)
+            {
+                var w = orderedNodes[i];
+                if (idom[w] != semi[w])
+                    idom[w] = idom[idom[w]];
+            }
+
+            idom[entrypoint] = entrypoint;
+            return idom;
         }
 
-        /// <summary>
-        /// Finds the first common ancestor of two nodes in the dominator tree.
-        /// </summary>
-        /// <param name="dominators">The immediate dominators of each node.</param>
-        /// <param name="node1">The first node.</param>
-        /// <param name="node2">The second node.</param>
-        /// <returns>The first common ancestor.</returns>
-        private static Node Intersect(IDictionary<Node, Node> dominators, Node node1, Node node2)
+        private static void Link(Node parent, Node node, IDictionary<Node, Node> ancestors)
         {
-            var hashSet = new HashSet<Node>();
-            while (node1 != null)
+            ancestors[node] = parent;
+        }
+
+        private static Node Eval(Node node, IDictionary<Node, Node> ancestors, IDictionary<Node, Node> semi, TraversalOrderRecorder order)
+        {
+            var a = ancestors[node];
+            while (a != null && ancestors[a] != null)
             {
-                if (!hashSet.Add(node1))
-                    break;
-                node1 = dominators[node1];
+                if (order.GetIndex(semi[node]) > order.GetIndex(semi[a]))
+                    node = a;
+                a = ancestors[a];
             }
-            while (node2 != null)
-            {
-                if (!hashSet.Add(node2))
-                    return node2;
-                node2 = dominators[node2];
-            }
-            return null;
+
+            return node;
         }
         
         /// <summary>

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rivers.Analysis.Traversal
 {
@@ -9,6 +10,7 @@ namespace Rivers.Analysis.Traversal
     public class TraversalOrderRecorder
     {
         private readonly IDictionary<Node, int> _indices = new Dictionary<Node, int>();
+        private readonly List<Node> _order = new List<Node>();
         private readonly ITraversal _traversal;
 
         public TraversalOrderRecorder(ITraversal traversal)
@@ -32,10 +34,18 @@ namespace Rivers.Analysis.Traversal
             return _indices.TryGetValue(node, out int index) ? index : -1;
         }
 
+        public IList<Node> GetTraversal()
+        {
+            return _order.AsReadOnly();
+        }
+        
         private void TraversalOnNodeDiscovered(object sender, NodeDiscoveryEventArgs e)
         {
             if (!_indices.ContainsKey(e.NewNode))
+            {
                 _indices[e.NewNode] = _indices.Count;
+                _order.Add(e.NewNode);
+            }
         }
     }
 }
