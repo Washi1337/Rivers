@@ -200,9 +200,9 @@ namespace Rivers.Analysis
         /// <returns>A dictionary mapping all nodes to their associated dominance frontiers.</returns>
         private static IDictionary<Node, ISet<Node>> GetDominanceFrontier(Graph graph, IDictionary<Node, Node> dominators)
         {
-            var frontier = graph.Nodes.ToDictionary(x => x, x => (ISet<Node>) new HashSet<Node>());
+            var frontier = dominators.Keys.ToDictionary(x => x, x => (ISet<Node>) new HashSet<Node>());
             
-            foreach (var node in graph.Nodes)
+            foreach (var node in dominators.Keys)
             {
                 var predecessors = node.GetPredecessors().ToArray();
                 if (predecessors.Length >= 2)
