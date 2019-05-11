@@ -71,5 +71,30 @@ namespace Rivers.Test.Analysis.Traversal
                 Assert.True(recorder.GetIndex(Tree.Nodes["5"]) < recorder.GetIndex(Tree.Nodes["4A"]));
         }
 
+        [Fact]
+        public void PostOrderTest()
+        {
+            var graph = new Graph();
+            graph.Nodes.Add("0");
+            graph.Nodes.Add("1");
+            graph.Nodes.Add("2");
+            graph.Nodes.Add("3");
+            graph.Nodes.Add("4");
+
+            graph.Edges.Add("0", "2");
+            graph.Edges.Add("2", "1");
+            graph.Edges.Add("0", "3");
+            graph.Edges.Add("0", "4");
+            
+            var traversal = new DepthFirstTraversal();
+            var recorder = new PostOrderRecorder(traversal);
+            traversal.Run(graph.Nodes["0"]);
+
+            var order = recorder.GetOrder();
+            Assert.Equal(order.Count, graph.Nodes.Count);
+            Assert.All(graph.Nodes, n => Assert.True(order.IndexOf(graph.Nodes["0"]) >= order.IndexOf(n)));
+            Assert.True(order.IndexOf(graph.Nodes["1"]) < order.IndexOf(graph.Nodes["2"]));
+            Assert.True(order.IndexOf(graph.Nodes["4"]) < order.IndexOf(graph.Nodes["3"]));
+        }
     }
 }

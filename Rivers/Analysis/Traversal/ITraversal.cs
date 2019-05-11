@@ -13,6 +13,11 @@ namespace Rivers.Analysis.Traversal
         event EventHandler<NodeDiscoveryEventArgs> NodeDiscovered;
 
         /// <summary>
+        /// Fires when the traversal is completed.
+        /// </summary>
+        event EventHandler TraversalCompleted;
+        
+        /// <summary>
         /// Performs the traversal algorithm.
         /// </summary>
         /// <param name="entrypoint">The starting node.</param>

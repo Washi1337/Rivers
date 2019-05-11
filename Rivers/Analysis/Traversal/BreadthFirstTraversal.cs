@@ -11,6 +11,8 @@ namespace Rivers.Analysis.Traversal
         /// <inheritdoc />
         public event EventHandler<NodeDiscoveryEventArgs> NodeDiscovered;
 
+        public event EventHandler TraversalCompleted;
+
         /// <inheritdoc />
         public void Run(Node entrypoint)
         {
@@ -37,11 +39,18 @@ namespace Rivers.Analysis.Traversal
                         queue.Enqueue((edge.GetOtherNode(node), edge));
                 }
             }
+            
+            OnTraversalCompleted();
         }
 
         protected virtual void OnNodeDiscovered(NodeDiscoveryEventArgs e)
         {
             NodeDiscovered?.Invoke(this, e);
+        }
+
+        protected virtual void OnTraversalCompleted()
+        {
+            TraversalCompleted?.Invoke(this, EventArgs.Empty);
         }
     }
 }
