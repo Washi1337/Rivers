@@ -22,6 +22,7 @@ Features
 - Various built-in node traversal and search algorithms (including breadth first, depth first and more).
 - Pathfinding algorithms such as Dijkstra and A*
 - Partitioning and isomorphism finder algorithms
+- Connectivity analysis such as finding strongly connected components.
 - Built-in dominator analysis. Useful for control flow graph analysis.
     - Construct dominator trees from CFGs.
     - Get dominance frontier.
@@ -79,7 +80,7 @@ Perform graph searches and traversals
 There are various extension methods defined to perform searches in the graph. Example:
 
 ```csharp
-using Rivers.Analysis;
+using Rivers.Analysis.Traversal;
 
 var result = myNode.DepthFirstSearch(n => n.Name.Contains("A"));
 if (result == null) 
@@ -88,17 +89,39 @@ if (result == null)
 }
 ```
 
-If you are more interested in the actual traversal of the nodes, you can use the corresponding `Traversal` extension instead. This will result in an `IEnumerable<Node>` that is lazily initialized with all the nodes that it is traversing.
+If you are more interested in the actual traversal of the nodes, you can use one of the `ITraversal` implementations, along with various built-in hooks such as the `TraversalOrderRecorder`.
 
 ```csharp
-foreach (var node in myNode.DepthFirstTraversal()) 
+using Rivers.Analysis.Traversal;
+
+var traversal = new DepthFirstTraversal();
+var order = new TraversalOrderRecorder();
+traversal.Run(myNode);
+
+// Loop over all nodes in the order that the depth first algorithm traverses the graph.
+foreach (var node in order.GetTraversal()) 
 {
     // ...
 }
 
-var nodes = from n in myNode.DepthFirstTraversal()
-            // ...
-            select n;
+// Gets the index of a specific node during the traversal. 
+// This is more efficient than order.GetTraversal().IndexOf(myOtherNode).
+int index = order.GetIndex(myOtherNode);
+```
+
+Categorizing graphs
+-------------------
+Rivers provides a bunch of standard structural analysis algorithms that detect all kinds of types of graphs.
+
+```csharp
+using Rivers.Analysis;
+
+var graph = // ...
+bool cyclic = graph.IsCyclic();
+bool connected = graph.IsConnected();
+bool tree = graph.IsTree();
+bool regular = graph.IsRegular();
+bool complete = graph.IsComplete();
 ```
 
 Generating graphs
