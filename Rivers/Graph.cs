@@ -168,6 +168,21 @@ namespace Rivers
 
             return g;
         }
+
+        public Graph Transpose()
+        {
+            if (!IsDirected)
+                throw new InvalidOperationException("Can only get the transpose of a directed graph.");
+            
+            var g = new Graph();
+
+            foreach (var node in Nodes)
+                g.Nodes.Add(node.Name);
+            foreach (var edge in Edges)
+                g.Edges.Add(edge.Target.Name, edge.Source.Name);
+            
+            return g;
+        }
         
     }
 }

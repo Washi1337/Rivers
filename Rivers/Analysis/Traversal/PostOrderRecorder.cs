@@ -28,6 +28,9 @@ namespace Rivers.Analysis.Traversal
 
         private void TraversalOnNodeDiscovered(object sender, NodeDiscoveryEventArgs e)
         {
+            if (!e.ContinueExploring)
+                return;
+            
             if (e.Origin == null)
             {
                 AddRemainingNodes();

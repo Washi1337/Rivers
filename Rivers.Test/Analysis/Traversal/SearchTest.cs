@@ -83,8 +83,9 @@ namespace Rivers.Test.Analysis.Traversal
 
             graph.Edges.Add("0", "2");
             graph.Edges.Add("2", "1");
+            graph.Edges.Add("1", "0");
             graph.Edges.Add("0", "3");
-            graph.Edges.Add("0", "4");
+            graph.Edges.Add("3", "4");
             
             var traversal = new DepthFirstTraversal();
             var recorder = new PostOrderRecorder(traversal);
