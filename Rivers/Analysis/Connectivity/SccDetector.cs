@@ -16,10 +16,17 @@ namespace Rivers.Analysis.Connectivity
         /// <returns>A collection of sets representing the strongly connected components.</returns>
         public static ICollection<ISet<Node>> FindStronglyConnectedComponents(this Graph graph)
         {
+            return FindStronglyConnectedComponents(graph.Nodes.First());
+        }
+
+        public static ICollection<ISet<Node>> FindStronglyConnectedComponents(this Node entrypoint)
+        {
+            var graph = entrypoint.ParentGraph;
+            
             var traversal = new DepthFirstTraversal();
             var recorder = new PostOrderRecorder(traversal);
 
-            traversal.Run(graph.Nodes.First());
+            traversal.Run(entrypoint);
 
             var transpose = graph.Transpose();
 
@@ -40,13 +47,12 @@ namespace Rivers.Analysis.Connectivity
                         }
                     };
                     subTraversal.Run(transpose.Nodes[node.Name]);
-                    
+
                     result.Add(component);
                 }
             }
 
             return result;
         }
-        
     }
 }
