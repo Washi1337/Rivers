@@ -8,9 +8,14 @@
       <ProjectReference Include="..\Rivers\Rivers.csproj" />
     </ItemGroup>
     <ItemGroup>
+<<<<<<< Updated upstream
       <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
       <PackageReference Include="xunit" Version="2.4.1" />
       <PackageReference Include="xunit.core" Version="2.4.1" />
+=======
+      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
+      <PackageReference Include="xunit" Version="2.4.1" />
+>>>>>>> Stashed changes
       <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
     </ItemGroup>
 </Project>
