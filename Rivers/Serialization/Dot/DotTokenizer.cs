@@ -77,7 +77,7 @@ namespace Rivers.Serialization.Dot
                 throw new EndOfStreamException();
             char c = (char) pc;
             
-            if (char.IsLetterOrDigit(c))
+            if (IsWordLetter(c))
             {
                 string word = ReadWord();
                 if (!Keywords.TryGetValue(word, out var terminal))
@@ -108,7 +108,12 @@ namespace Rivers.Serialization.Dot
                 default:
                     return UnrecognisedToken();
             }
-        }        
+        }
+
+        private static bool IsWordLetter(char c)
+        {
+            return char.IsLetterOrDigit(c) || c == '_';
+        }
         
         private DotToken UnrecognisedToken()
         {
@@ -143,7 +148,7 @@ namespace Rivers.Serialization.Dot
             while(true)
             {
                 int c = _reader.Peek();
-                if (c == -1 || !char.IsLetterOrDigit((char) c))
+                if (c == -1 || !IsWordLetter((char) c))
                     break;
                 builder.Append(ReadCharacter());
             }

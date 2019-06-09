@@ -92,8 +92,12 @@ namespace Rivers.Serialization.Dot
 
             _graphs.Push(new Graph(directed));
 
-            ExpectOneOf(DotTerminal.OpenBrace);
+            var nameToken = ExpectOneOf(DotTerminal.OpenBrace, DotTerminal.Identifier);
+            if (nameToken.Terminal == DotTerminal.Identifier)
+                ExpectOneOf(DotTerminal.OpenBrace);
+            
             ReadStatementList();
+            
             ExpectOneOf(DotTerminal.CloseBrace);
 
             return _graphs.Pop();

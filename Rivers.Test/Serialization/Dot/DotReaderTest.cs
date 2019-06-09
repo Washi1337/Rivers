@@ -476,5 +476,56 @@ B [MyProperty=""SomeValue""]
                 NodeComparer = new NodeComparer { IncludeUserData = true }
             });   
         }
+
+        [Fact]
+        public void NamedGraph()
+        {
+            var g = new Graph();
+
+            var n0 = g.Nodes.Add("0");
+            var n1 = g.Nodes.Add("1");
+            
+            g.Edges.Add(n0, n1);
+            
+            var reader = new StringReader(@"
+strict digraph G {
+    0 -> 1
+}");
+            var dotReader = new DotReader(reader);
+            var h = dotReader.Read();
+            
+            Assert.Equal(g, h, new GraphComparer()
+            {
+                NodeComparer = new NodeComparer { IncludeUserData = true }
+            });     
+        }
+        
+        [Fact]
+        public void SpecialCharacters()
+        {
+            var g = new Graph();
+
+            var n0 = g.Nodes.Add("IL_0000");
+            var n1 = g.Nodes.Add("IL_0001");
+            var n2 = g.Nodes.Add("IL_0002");
+            var n3 = g.Nodes.Add("IL_0003");
+
+            g.Edges.Add(n0, n1);
+            g.Edges.Add(n0, n2);
+            g.Edges.Add(n1, n3);
+            g.Edges.Add(n2, n3);
+            
+            var reader = new StringReader(@"
+strict digraph {
+    IL_0000 -> IL_0001
+    IL_0001 -> IL_0003
+    IL_0000 -> IL_0002
+    IL_0002 -> IL_0003
+}");
+            var dotReader = new DotReader(reader);
+            var h = dotReader.Read();
+            
+            Assert.Equal(g, h, new GraphComparer());  
+        }
     }
 }
