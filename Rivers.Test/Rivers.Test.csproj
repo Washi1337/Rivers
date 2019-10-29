@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>netcoreapp2.2</TargetFramework>
         <LangVersion>latest</LangVersion>
+        <TargetFrameworks>net471;netcoreapp2.2</TargetFrameworks>
     </PropertyGroup>
     <ItemGroup>
       <ProjectReference Include="..\Rivers\Rivers.csproj" />

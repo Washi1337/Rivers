@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0</TargetFrameworks>
+        <TargetFrameworks>net471;netstandard2.0</TargetFrameworks>
         <Title>Rivers</Title>
         <Version>0.1.0.0</Version>
         <Copyright>Copyright 2018 Washi</Copyright>
