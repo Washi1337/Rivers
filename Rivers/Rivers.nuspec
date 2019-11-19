@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://github.com/Washi1337/Rivers/blob/master/LICENSE.md</licenseUrl>
+    <projectUrl>https://github.com/Washi1337/Rivers</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <copyright>Copyright $author$ 2018-2019</copyright>
+    <tags>dotnet graph node edge model algorithms</tags>
+  </metadata>
+</package>

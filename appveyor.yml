@@ -11,8 +11,16 @@
     - nuget restore
     
   build:
+    publish_nuget: true
     verbosity: minimal
 
   artifacts:
     - path: Rivers/bin/Release
       name: Bleeding edge
+
+  deploy:
+    provider: NuGet
+    api_key:
+      secure: PVEUaSEahOzJfYurDeVaY8zzkeyuxqL0KlUvgM6cQeldGh2xCvyPeKgEXOOt2ECy
+    skip_symbols: false
+    artifact: /.*\.nupkg/
