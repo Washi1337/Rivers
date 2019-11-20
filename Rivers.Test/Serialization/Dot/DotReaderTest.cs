@@ -527,5 +527,26 @@ strict digraph {
             
             Assert.Equal(g, h, new GraphComparer());  
         }
+
+        [Fact]
+        public void IdentifierStartingWithDigit()
+        {
+            // https://github.com/Washi1337/Rivers/issues/7
+            
+            var g = new Graph();
+            g.Nodes.Add("0");
+            g.Nodes.Add("x0");
+            g.Nodes.Add("x1");
+            g.Edges.Add("x0", "0");
+            
+            var reader = new StringReader(@"
+strict digraph {
+    0x0 -> 0x1
+}");
+            var dotReader = new DotReader(reader);
+            var h = dotReader.Read();
+            Assert.Equal(g,h,new GraphComparer());
+        }
+        
     }
 }

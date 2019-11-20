@@ -76,10 +76,15 @@ namespace Rivers.Serialization.Dot
             if (pc == -1)
                 throw new EndOfStreamException();
             char c = (char) pc;
-            
-            if (IsWordLetter(c))
+
+            if (char.IsDigit(c))
             {
-                string word = ReadWord();
+                string integer = ReadIntegerIdentifier();
+                return new DotToken(integer, DotTerminal.Identifier, new TextRange(_startLocation, _currentLocation));
+            }
+            else if (IsWordStart(c))
+            {
+                string word = ReadWordIdentifier();
                 if (!Keywords.TryGetValue(word, out var terminal))
                     terminal = DotTerminal.Identifier;
                 return new DotToken(word, terminal, new TextRange(_startLocation, _currentLocation));
@@ -112,7 +117,12 @@ namespace Rivers.Serialization.Dot
 
         private static bool IsWordLetter(char c)
         {
-            return char.IsLetterOrDigit(c) || c == '_';
+            return IsWordStart(c) || char.IsDigit(c);
+        }
+
+        private static bool IsWordStart(char c)
+        {
+            return char.IsLetter(c) || c == '_';
         }
         
         private DotToken UnrecognisedToken()
@@ -141,21 +151,31 @@ namespace Rivers.Serialization.Dot
             return c;
         }
 
-        private string ReadWord()
+        private string ReadIntegerIdentifier()
+        {
+            return ReadIdentifier(char.IsDigit);
+        }
+
+        private string ReadWordIdentifier()
+        {
+            return ReadIdentifier(IsWordLetter);
+        }
+
+        private string ReadIdentifier(Predicate<char> condition)
         {
             var builder = new StringBuilder();
             
             while(true)
             {
                 int c = _reader.Peek();
-                if (c == -1 || !IsWordLetter((char) c))
+                if (c == -1 || !condition((char) c))
                     break;
                 builder.Append(ReadCharacter());
             }
 
             return builder.ToString();
         }
-
+        
         private DotToken ReadCharacterToken(DotTerminal terminal)
         {
             return new DotToken(ReadCharacter().ToString(), terminal,

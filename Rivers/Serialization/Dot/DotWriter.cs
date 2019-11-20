@@ -211,7 +211,10 @@ namespace Rivers.Serialization.Dot
 
         private static bool NeedsEscaping(string text)
         {
-            return text.Any(c => EscapedCharacters.ContainsKey(c) || !char.IsLetterOrDigit(c));
+            bool startsWithDigit = char.IsDigit(text[0]);
+            return text.Any(c => EscapedCharacters.ContainsKey(c)
+                                 || !char.IsLetterOrDigit(c)
+                                 || startsWithDigit && !char.IsDigit(c));
         }
 
         private void WriteEscapedCharacter(char c)

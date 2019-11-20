@@ -202,7 +202,34 @@ namespace Rivers.Test.Serialization.Dot
 
             Validate(g, true, true);
         }
-        
-        
+
+        [Fact]
+        public void IdentifierStartingWithDigit()
+        {
+            // https://github.com/Washi1337/Rivers/issues/7
+            
+            var g = new Graph(true);
+            g.Nodes.Add("0x0");
+            g.Nodes.Add("0x1");
+            g.Edges.Add("0x0", "0x1");
+
+            Validate(g, true, true);
+        }
+
+        [Fact]
+        public void UserDataStartingWithDigit()
+        {
+            // https://github.com/Washi1337/Rivers/issues/7
+
+            var g = new Graph();
+            g.Nodes.Add("_0001")
+                .UserData["label"] = "Add";
+            g.Nodes.Add("_0002")
+                .UserData["label"] = "0x70";
+            g.Nodes.Add("_0003")
+                .UserData["label"] = "0x70";
+            
+            Validate(g, true, true);
+        }
     }
 }
