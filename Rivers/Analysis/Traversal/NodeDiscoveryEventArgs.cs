@@ -4,10 +4,11 @@ namespace Rivers.Analysis.Traversal
 {
     public class NodeDiscoveryEventArgs : DiscoveryEventArgs
     {
-        public NodeDiscoveryEventArgs(Node newNode, Edge origin)
+        public NodeDiscoveryEventArgs(Node newNode, Edge origin, int depth)
         {
             NewNode = newNode;
             Origin = origin;
+            Depth = depth;
         }
         
         public Node NewNode
@@ -16,6 +17,11 @@ namespace Rivers.Analysis.Traversal
         }
 
         public Edge Origin
+        {
+            get;
+        }
+
+        public int Depth
         {
             get;
         }

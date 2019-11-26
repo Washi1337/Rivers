@@ -17,14 +17,14 @@ namespace Rivers.Analysis.Traversal
         public void Run(Node entrypoint)
         {
             var visited = new HashSet<Node>();
-            var queue = new Queue<(Node node, Edge origin)>();
-            queue.Enqueue((entrypoint, null));
+            var queue = new Queue<(Node node, Edge origin, int depth)>();
+            queue.Enqueue((entrypoint, null, 0));
 
             while (queue.Count > 0)
             {
-                var (node, origin) = queue.Dequeue();
+                var (node, origin, depth) = queue.Dequeue();
 
-                var eventArgs = new NodeDiscoveryEventArgs(node, origin)
+                var eventArgs = new NodeDiscoveryEventArgs(node, origin, depth)
                 {
                     ContinueExploring = visited.Add(node)
                 };
@@ -36,7 +36,9 @@ namespace Rivers.Analysis.Traversal
                 if (eventArgs.ContinueExploring)
                 {
                     foreach (var edge in node.OutgoingEdges)
-                        queue.Enqueue((edge.GetOtherNode(node), edge));
+                    {
+                        queue.Enqueue((edge.GetOtherNode(node), edge, depth + 1));
+                    }
                 }
             }
             

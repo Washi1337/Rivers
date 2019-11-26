@@ -20,13 +20,13 @@ namespace Rivers.Analysis.Traversal
                 throw new ArgumentNullException(nameof(entrypoint));
             
             var visited = new HashSet<Node>();
-            var stack = new Stack<(Node node, Edge edge)>();
-            stack.Push((entrypoint, null));
+            var stack = new Stack<(Node node, Edge edge, int depth)>();
+            stack.Push((entrypoint, null, 0));
             
             while (stack.Count > 0)
             {
-                var (node, origin) = stack.Pop();
-                var eventArgs = new NodeDiscoveryEventArgs(node, origin)
+                var (node, origin, depth) = stack.Pop();
+                var eventArgs = new NodeDiscoveryEventArgs(node, origin, depth)
                 {
                     ContinueExploring = visited.Add(node)
                 };
@@ -38,7 +38,7 @@ namespace Rivers.Analysis.Traversal
                 if (eventArgs.ContinueExploring)
                 {
                     foreach (var edge in node.OutgoingEdges)
-                        stack.Push((edge.GetOtherNode(node), edge));
+                        stack.Push((edge.GetOtherNode(node), edge, depth + 1));
                 }
             }
             
