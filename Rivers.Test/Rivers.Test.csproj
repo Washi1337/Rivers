@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <LangVersion>latest</LangVersion>
-        <TargetFrameworks>net471;netcoreapp2.2</TargetFrameworks>
+        <TargetFramework>netcoreapp2.2</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
       <ProjectReference Include="..\Rivers\Rivers.csproj" />
